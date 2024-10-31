@@ -18,6 +18,7 @@ final class StatisticsViewController: UIViewController {
     // MARK: - ViewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupUserInterface()
     }
     // MARK: - Private functions
     private func setupUserInterface() {
