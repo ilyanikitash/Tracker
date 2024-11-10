@@ -7,16 +7,30 @@
 import UIKit
 
 final class TabBarController: UITabBarController {
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        let mainScreenViewController = MainScreenViewController()
-        mainScreenViewController.tabBarItem = UITabBarItem(title: "Трекеры",
-                                                           image: UIImage(named: "TabBarTrackersActive"),
-                                                           selectedImage: nil)
-        let statisticsViewController = StatisticsViewController()
-        statisticsViewController.tabBarItem = UITabBarItem(title: "Статистика",
-                                                           image: UIImage(named: "TabBarStatisticsActive"),
-                                                           selectedImage: nil)
-        self.viewControllers = [mainScreenViewController, statisticsViewController]
+    private var viewControllersList: [UIViewController] {
+            
+        let mainVC = MainScreenViewController()
+        let mainNavController = UINavigationController(rootViewController: mainVC)
+            
+        mainNavController.setNavigationBarHidden(false, animated: false)
+        mainNavController.tabBarItem = UITabBarItem(title: "Трекеры", image: UIImage(named: "TabBarTrackersActive"), tag: 0)
+            
+        let secondVC = StatisticsViewController()
+        secondVC.tabBarItem = UITabBarItem(title: "Статистика", image: UIImage(named: "TabBarStatisticsActive"), tag: 1)
+            
+        return [mainNavController, secondVC]
     }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+            
+        viewControllers = viewControllersList
+        configureTabBarAppearance()
+    }
+    
+    private func configureTabBarAppearance() {
+        tabBar.tintColor = .systemBlue
+        tabBar.unselectedItemTintColor = .gray
+    }
+    
 }
