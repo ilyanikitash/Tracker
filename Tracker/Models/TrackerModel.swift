@@ -11,15 +11,20 @@ struct TrackerModel {
     let name: String
     let color: UIColor
     let emoji: String
-    let schedule: Schedule?
+    let schedule: [Weekday]?
+    let type: TrackerType
+    let categoryName: String
 }
 
-struct Schedule {
-    let weekdays: [Weekday : Bool]
+//struct Schedule {
+//    let weekdays: [Weekday : Bool]
+//}
+
+enum Weekday: Int {
+    case monday = 1, tuesday, wednesday, thursday, friday, saturday, sunday
 }
 
-enum Weekday: String, Codable {
-    case monday, tuesday, wednesday, thursday, friday, saturday, sunday
+enum TrackerType {
+    case habbit
+    case event
 }
-
-
