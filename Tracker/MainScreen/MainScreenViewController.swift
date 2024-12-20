@@ -45,11 +45,11 @@ final class MainScreenViewController: UIViewController {
     // MARK: - properties
     var categories: [TrackerCategoryModel] = [
         TrackerCategoryModel(title: "Важное", trackers: [
-            TrackerModel(id: UUID(), name: "Спать", color: .color1, emoji: "❤️", schedule: [.monday, .thursday, .wednesday, .tuesday, .friday, .saturday, .sunday], type: .habbit, categoryName: "Важное"),
-            TrackerModel(id: UUID(), name: "Есть", color: .color7, emoji: "🍔", schedule: [.monday, .thursday, .wednesday, .tuesday, .friday, .saturday, .sunday], type: .habbit, categoryName: "Важное")
+            TrackerModel(id: UUID(), name: "Спать", color: .color1, emoji: "❤️", schedule: [.monday, .thursday, .wednesday, .tuesday, .friday, .saturday, .sunday], type: .habbit),
+            TrackerModel(id: UUID(), name: "Есть", color: .color7, emoji: "🍔", schedule: [.monday, .thursday, .wednesday, .tuesday, .friday, .saturday, .sunday], type: .habbit)
         ]),
         TrackerCategoryModel(title: "Неважное", trackers: [
-            TrackerModel(id: UUID(), name: "Грустить", color: .color4, emoji: "😱", schedule: [.monday, .thursday, .wednesday, .tuesday, .friday, .saturday, .sunday], type: .habbit, categoryName: "Неважное")
+            TrackerModel(id: UUID(), name: "Грустить", color: .color4, emoji: "😱", schedule: [.monday, .thursday, .wednesday, .tuesday, .friday, .saturday, .sunday], type: .habbit)
         ])
     ]
     var completedTrackers: [TrackerRecordModel] = []
@@ -66,14 +66,32 @@ final class MainScreenViewController: UIViewController {
     }
     // MARK: - Selectors
     @objc private func didReceiveNewTrackerNotification(_ notification: Notification) {
-        guard let newTracker = notification.object as? TrackerModel else { return }
+        //guard let newTracker = notification.object as? TrackerModel else { return }
         
         var updatedCategories: [TrackerCategoryModel] = []
         
         var trackerAdded = false
         
+        var newTracker: TrackerModel = TrackerModel(id: UUID(),
+                                                    name: "",
+                                                    color: .red,
+                                                    emoji: "",
+                                                    schedule: [.monday],
+                                                    type: .event)
+        var categoryName: String = ""
+        
+        if let userInfo = notification.userInfo {
+            if let tracker = userInfo["newTracker"] as? TrackerModel,
+               let category = userInfo["categoryName"] as? String
+            {
+                newTracker = tracker
+                categoryName = category
+            } else {
+                fatalError("Invalid notification userInfo")
+            }
+        }
         for category in categories {
-            if category.title == newTracker.categoryName {
+            if category.title == categoryName {
                 var updatedTrackers = category.trackers
                 updatedTrackers.append(newTracker)
                 
@@ -86,7 +104,7 @@ final class MainScreenViewController: UIViewController {
         }
         
         if !trackerAdded {
-            let newCategory = TrackerCategoryModel(title: newTracker.categoryName, trackers: [newTracker])
+            let newCategory = TrackerCategoryModel(title: categoryName, trackers: [newTracker])
             updatedCategories.append(newCategory)
         }
         
@@ -101,6 +119,7 @@ final class MainScreenViewController: UIViewController {
     }
     
     @objc private func datePickerValueChanged() {
+        currentDate = datePicker.date
         reloadFiltredCategories(with: "")
     }
     // MARK: - Private functions
@@ -111,7 +130,11 @@ final class MainScreenViewController: UIViewController {
     
     private func reloadFiltredCategories(with text: String) {
         let calendar = Calendar.current
-        let filterWeekday = calendar.component(.weekday, from: datePicker.date)
+        var filterWeekday = calendar.component(.weekday, from: currentDate) - 1
+        if filterWeekday == 0 {
+            filterWeekday = 7
+        }
+        print("FILTER WEEKDAY: \(filterWeekday)")
         let filterText = text.lowercased()
         
         filteredCategories = categories.compactMap { category in
@@ -119,10 +142,9 @@ final class MainScreenViewController: UIViewController {
                 let textCondition = filterText.isEmpty ||
                     tracker.name.lowercased().contains(filterText)
 
-                let dateCondition = tracker.schedule?.contains { weekDay in
+                let dateCondition = tracker.schedule.contains { weekDay in
                     return weekDay.rawValue == filterWeekday
                 }
-                guard let dateCondition else { return false }
                 return textCondition && dateCondition
             }
             
@@ -175,7 +197,7 @@ final class MainScreenViewController: UIViewController {
         }
 
         return completedTrackers.contains {
-            $0.id == id && Calendar.current.isDate($0.date, inSameDayAs: datePicker.date)
+            $0.id == id && Calendar.current.isDate($0.date, inSameDayAs: currentDate)
         }
     }
     private func setupUserInterface() {
@@ -289,11 +311,11 @@ extension MainScreenViewController: TrackerCellDelegate {
 
         if tracker.type == .habbit {
             let isAlreadyCompleted = completedTrackers.contains {
-                $0.id == id && Calendar.current.isDate($0.date, inSameDayAs: datePicker.date)
+                $0.id == id && Calendar.current.isDate($0.date, inSameDayAs: currentDate)
             }
             guard !isAlreadyCompleted else { return }
 
-            let trackerRecord = TrackerRecordModel(id: id, date: datePicker.date)
+            let trackerRecord = TrackerRecordModel(id: id, date: currentDate)
             completedTrackers.append(trackerRecord)
         }
 
@@ -320,7 +342,7 @@ extension MainScreenViewController: TrackerCellDelegate {
         if tracker.type == .habbit {
             completedTrackers.removeAll { trackerRecord in
                 trackerRecord.id == id &&
-                Calendar.current.isDate(trackerRecord.date, inSameDayAs: datePicker.date)
+                Calendar.current.isDate(trackerRecord.date, inSameDayAs: currentDate)
             }
         }
 
