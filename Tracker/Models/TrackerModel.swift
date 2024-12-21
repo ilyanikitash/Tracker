@@ -11,14 +11,9 @@ struct TrackerModel {
     let name: String
     let color: UIColor
     let emoji: String
-    let schedule: [Weekday]?
+    let schedule: [Weekday]
     let type: TrackerType
-    let categoryName: String
 }
-
-//struct Schedule {
-//    let weekdays: [Weekday : Bool]
-//}
 
 enum Weekday: Int {
     case monday = 1, tuesday, wednesday, thursday, friday, saturday, sunday

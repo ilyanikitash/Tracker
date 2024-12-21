@@ -23,6 +23,7 @@ final class NewIrregularEventViewController: UIViewController {
     }()
     private lazy var textField: UITextField = {
         let textField = UITextField()
+        textField.clearButtonMode = .whileEditing
         textField.placeholder = "Введите название трекера"
         textField.font = .systemFont(ofSize: 17, weight: .regular)
         textField.addTarget(self, action: #selector(checkCreateButton), for: .editingChanged)
@@ -105,6 +106,10 @@ final class NewIrregularEventViewController: UIViewController {
         setupTableView()
         setupCollections()
     }
+    // MARK: - Override functions
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(true)
+    }
     // MARK: - Selectors
     @objc
     private func didTapCreateButton() {
@@ -113,8 +118,8 @@ final class NewIrregularEventViewController: UIViewController {
         guard let emoji = selectedEmoji else { return }
         guard let categoryName = selectedCategory?.title else { return }
         
-        let newTracker = TrackerModel(id: UUID(), name: text, color: color, emoji: emoji, schedule: [.monday, .tuesday, .wednesday, .thursday, .friday, .saturday, .sunday], type: .event, categoryName: categoryName)
-        NotificationCenter.default.post(name: .didCreateNewTracker, object: newTracker)
+        let newTracker = TrackerModel(id: UUID(), name: text, color: color, emoji: emoji, schedule: [.monday, .tuesday, .wednesday, .thursday, .friday, .saturday, .sunday], type: .event)
+        NotificationCenter.default.post(name: .didCreateNewTracker, object: nil, userInfo: ["newTracker": newTracker, "categoryName": categoryName])
         presentingViewController?.presentingViewController?.dismiss(animated: true, completion: nil)
     }
     @objc
@@ -283,7 +288,7 @@ final class NewIrregularEventViewController: UIViewController {
         NSLayoutConstraint.activate([
             textField.heightAnchor.constraint(equalTo: textFieldView.heightAnchor),
             textField.bottomAnchor.constraint(equalTo: textFieldView.bottomAnchor),
-            textField.trailingAnchor.constraint(equalTo: textFieldView.trailingAnchor),
+            textField.trailingAnchor.constraint(equalTo: textFieldView.trailingAnchor, constant: -16),
             textField.leadingAnchor.constraint(equalTo: textFieldView.leadingAnchor, constant: 16)
         ])
     }

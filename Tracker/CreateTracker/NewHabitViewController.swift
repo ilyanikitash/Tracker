@@ -16,6 +16,7 @@ final class NewHabitViewController: UIViewController {
     }()
     private lazy var habitsNameTextField: UITextField = {
         let textField = UITextField()
+        textField.clearButtonMode = .whileEditing
         textField.placeholder = "Введите название трекера"
         textField.addTarget(self, action: #selector(checkCreateButton), for: .editingChanged)
         return textField
@@ -106,6 +107,10 @@ final class NewHabitViewController: UIViewController {
         setupTableView()
         setupCollections()
     }
+    // MARK: - Override functions
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(true)
+    }
     // MARK: - Selectors
     @objc
     private func didTapCreateButton() {
@@ -114,14 +119,15 @@ final class NewHabitViewController: UIViewController {
         guard let emoji = selectedEmoji else { return }
         guard let categoryName = selectedCategory?.title else { return }
         if !selectedSchedule.isEmpty {
-            let newTracker = TrackerModel(id: UUID(), name: text, color: color, emoji: emoji, schedule: selectedSchedule, type: .habbit, categoryName: categoryName)
-            NotificationCenter.default.post(name: .didCreateNewTracker, object: newTracker)
+            print(selectedSchedule)
+            let newTracker = TrackerModel(id: UUID(), name: text, color: color, emoji: emoji, schedule: selectedSchedule, type: .habbit)
+            NotificationCenter.default.post(name: .didCreateNewTracker, object: nil, userInfo: ["newTracker": newTracker, "categoryName": categoryName])
             presentingViewController?.presentingViewController?.dismiss(animated: true, completion: nil)
         }
     }
     @objc
     private func cancelButtonTapped() {
-        presentingViewController?.dismiss(animated: true, completion: nil)
+        presentingViewController?.dismiss(animated: true, completion: nil) // при тапе на пустую облать не занятую UI элементами клавиатура пропадает
     }
     @objc
     private func checkCreateButton() {
@@ -212,7 +218,7 @@ final class NewHabitViewController: UIViewController {
             .saturday: "Сб",
             .sunday: "Вс"
         ]
-        
+        selectedSchedule.sort { $0.rawValue < $1.rawValue } // сортировка
         let shortNames = selectedSchedule.compactMap { weekdayShortNames[$0] }
         return shortNames.joined(separator: ", ")
     }
@@ -276,7 +282,7 @@ final class NewHabitViewController: UIViewController {
         NSLayoutConstraint.activate([
             habitsNameTextField.centerYAnchor.constraint(equalTo: habitsNameView.centerYAnchor),
             habitsNameTextField.leadingAnchor.constraint(equalTo: habitsNameView.leadingAnchor, constant: 16),
-            habitsNameTextField.trailingAnchor.constraint(equalTo: habitsNameView.trailingAnchor),
+            habitsNameTextField.trailingAnchor.constraint(equalTo: habitsNameView.trailingAnchor, constant: -16),
             habitsNameTextField.topAnchor.constraint(equalTo: habitsNameView.topAnchor),
             habitsNameTextField.bottomAnchor.constraint(equalTo: habitsNameView.bottomAnchor)
         ])
