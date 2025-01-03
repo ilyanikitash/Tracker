@@ -7,6 +7,7 @@
 import UIKit
 
 final class CreateTrackerViewController: UIViewController {
+    weak var mainScreenViewController: MainScreenViewController?
     // MARK: - lazy properties (UI Elements)
     lazy var label: UILabel = {
         let label = UILabel()
@@ -40,15 +41,29 @@ final class CreateTrackerViewController: UIViewController {
     // MARK: - Selectors
     @objc
     private func habitButtonTapped() {
-        let newHabitVC = NewHabitViewController()
-        newHabitVC.modalPresentationStyle = .popover
-        present(newHabitVC, animated: true, completion: nil)
+        guard let mainScreenVC = mainScreenViewController else { return }
+
+        let mainScreenViewController = mainScreenVC.newHabitViewController
+        if let navigationController = self.navigationController {
+            navigationController.pushViewController(mainScreenViewController, animated: true)
+        } else {
+            mainScreenViewController.modalPresentationStyle = .pageSheet
+            present(mainScreenViewController, animated: true) {
+            }
+        }
     }
     @objc
     private func irregularEventButtonTapped() {
-        let newIrregularEventVC = NewIrregularEventViewController()
-        newIrregularEventVC.modalPresentationStyle = .popover
-        present(newIrregularEventVC, animated: true, completion: nil)
+        guard let mainScreenVC = mainScreenViewController else { return }
+
+        let mainScreenViewController = mainScreenVC.newIrregularEventViewController
+        if let navigationController = self.navigationController {
+            navigationController.pushViewController(mainScreenViewController, animated: true)
+        } else {
+            mainScreenViewController.modalPresentationStyle = .pageSheet
+            present(mainScreenViewController, animated: true) {
+            }
+        }
     }
     // MARK: - Private functions
     private func setupUserInterface() {

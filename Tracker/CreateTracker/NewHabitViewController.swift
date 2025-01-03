@@ -99,7 +99,10 @@ final class NewHabitViewController: UIViewController {
     private var selectedSchedule = [Weekday]()
     private var selectedEmoji: String?
     private var selectedColor: UIColor?
-    weak var delegate: SelectScheduleItemDelegate?
+    weak var newTrackerDelegate: NewTrackerViewControllerDelegate?
+    weak var scheduleDelegate: SelectScheduleItemDelegate?
+    
+    var trackerCreated: ((TrackerModel) -> Void)?
     // MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -119,15 +122,20 @@ final class NewHabitViewController: UIViewController {
         guard let emoji = selectedEmoji else { return }
         guard let categoryName = selectedCategory?.title else { return }
         if !selectedSchedule.isEmpty {
-            print(selectedSchedule)
-            let newTracker = TrackerModel(id: UUID(), name: text, color: color, emoji: emoji, schedule: selectedSchedule, type: .habbit)
-            NotificationCenter.default.post(name: .didCreateNewTracker, object: nil, userInfo: ["newTracker": newTracker, "categoryName": categoryName])
+            let newTracker = TrackerModel(id: UUID(),
+                                          name: text,
+                                          color: color,
+                                          emoji: emoji,
+                                          schedule: selectedSchedule,
+                                          type: .habbit)
+            newTrackerDelegate?.didTabCreateButton(categoryTitle: categoryName, trackerToAdd: newTracker)
             presentingViewController?.presentingViewController?.dismiss(animated: true, completion: nil)
         }
     }
     @objc
     private func cancelButtonTapped() {
-        presentingViewController?.dismiss(animated: true, completion: nil) // при тапе на пустую облать не занятую UI элементами клавиатура пропадает
+        dismiss(animated: true, completion: nil)
+        newTrackerDelegate?.didTabCancelButton()
     }
     @objc
     private func checkCreateButton() {
@@ -218,7 +226,7 @@ final class NewHabitViewController: UIViewController {
             .saturday: "Сб",
             .sunday: "Вс"
         ]
-        selectedSchedule.sort { $0.rawValue < $1.rawValue } // сортировка
+        selectedSchedule.sort { $0.rawValue < $1.rawValue }
         let shortNames = selectedSchedule.compactMap { weekdayShortNames[$0] }
         return shortNames.joined(separator: ", ")
     }

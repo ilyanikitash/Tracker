@@ -91,7 +91,7 @@ final class NewIrregularEventViewController: UIViewController {
         let view = UIView()
         return view
     }()
-    // MARK: - Private properties
+    // MARK: - properties
     private let emojis = [
         "😊", "😻", "🌺", "🐶", "❤️", "😱", "😇", "😡", "🥶", "🤔", "🙌", "🍔", "🥦", "🏓", "🥇", "🎸", "🏝", "😪"
     ]
@@ -99,6 +99,9 @@ final class NewIrregularEventViewController: UIViewController {
     private var selectedEmoji: String?
     private var selectedColor: UIColor?
     private var selectedCategory: TrackerCategoryModel?
+    weak var newTrackerDelegate: NewTrackerViewControllerDelegate?
+    
+    var trackerCreated: ((TrackerModel) -> Void)?
     // MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -118,13 +121,19 @@ final class NewIrregularEventViewController: UIViewController {
         guard let emoji = selectedEmoji else { return }
         guard let categoryName = selectedCategory?.title else { return }
         
-        let newTracker = TrackerModel(id: UUID(), name: text, color: color, emoji: emoji, schedule: [.monday, .tuesday, .wednesday, .thursday, .friday, .saturday, .sunday], type: .event)
-        NotificationCenter.default.post(name: .didCreateNewTracker, object: nil, userInfo: ["newTracker": newTracker, "categoryName": categoryName])
+        let newTracker = TrackerModel(id: UUID(),
+                                      name: text,
+                                      color: color,
+                                      emoji: emoji,
+                                      schedule: [.monday, .tuesday, .wednesday, .thursday, .friday, .saturday, .sunday],
+                                      type: .event)
+        newTrackerDelegate?.didTabCreateButton(categoryTitle: categoryName, trackerToAdd: newTracker)
         presentingViewController?.presentingViewController?.dismiss(animated: true, completion: nil)
     }
     @objc
     private func cancelButtonTapped() {
-        presentingViewController?.dismiss(animated: true, completion: nil)
+        dismiss(animated: true, completion: nil)
+        newTrackerDelegate?.didTabCancelButton()
     }
     @objc
     private func checkCreateButton() {
