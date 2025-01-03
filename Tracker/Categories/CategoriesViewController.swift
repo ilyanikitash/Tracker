@@ -12,7 +12,8 @@ protocol CategoriesViewControllerDelegate: AnyObject {
 
 final class CategoriesViewController: UIViewController {
     // MARK: - private properties
-    private let mainScreenVC = MainScreenViewController()
+    private var categories: [TrackerCategoryModel] = []
+    private let trackerCategoryStore = TrackerCategoryStore()
     // MARK: - lazy properties (UI Elements)
     private lazy var topLabel: UILabel = {
         let label = UILabel()
@@ -52,8 +53,11 @@ final class CategoriesViewController: UIViewController {
     // MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
+        getCategories()
+        
         setupUserInterface()
         setupTableView()
+        hiddenStubViews()
     }
     // MARK: - Selectors
     @objc
@@ -74,6 +78,9 @@ final class CategoriesViewController: UIViewController {
         }
     }
     // MARK: - Private functions
+    private func getCategories() {
+        categories = trackerCategoryStore.fetchAllCategories()
+    }
     private func setupTableView() {
         tableView.dataSource = self
         tableView.delegate = self
@@ -87,16 +94,26 @@ final class CategoriesViewController: UIViewController {
         
         view.addSubview(addCategoryButton)
         setupAddCategoryButtonConstraints()
-    
-        if mainScreenVC.categories.count == 0 {
-            view.addSubview(stubImage)
-            setupStubImageConstraints()
+
+        view.addSubview(stubImage)
+        setupStubImageConstraints()
             
-            view.addSubview(stubLabel)
-            setupStubLabelConstraints()
+        view.addSubview(stubLabel)
+        setupStubLabelConstraints()
+        
+        view.addSubview(tableView)
+        setupTableViewConstraints()
+        
+    }
+    private func hiddenStubViews() {
+        if categories.count == 0 {
+            stubImage.isHidden = false
+            stubLabel.isHidden = false
+            tableView.isHidden = true
         } else {
-            view.addSubview(tableView)
-            setupTableViewConstraints()
+            stubImage.isHidden = true
+            stubLabel.isHidden = true
+            tableView.isHidden = false
         }
     }
     // MARK: - Contraints
@@ -148,15 +165,15 @@ final class CategoriesViewController: UIViewController {
 }
 extension CategoriesViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return mainScreenVC.categories.count
+        return categories.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryTableViewCell", for: indexPath) as? NewTrackerTableViewCell
         cell?.image.image = UIImage(named: "DoneImage")
         cell?.image.isHidden = true
-        cell?.category = mainScreenVC.categories[indexPath.row]
-        cell?.buttonText.text = mainScreenVC.categories[indexPath.row].title
+        cell?.category = categories[indexPath.row]
+        cell?.buttonText.text = categories[indexPath.row].title
         cell?.button.addTarget(self, action: #selector(categoryDidTapped(_:)), for: .touchUpInside)
         guard let cell else { return UITableViewCell()}
         return cell
@@ -171,7 +188,9 @@ extension CategoriesViewController: UITableViewDelegate {
 
 extension CategoriesViewController: NewCategoryViewControllerDelegate {
     func addCategory(with name: String) {
-        mainScreenVC.categories.append(TrackerCategoryModel(title: name, trackers: []))
+        categories.append(TrackerCategoryModel(title: name, trackers: []))
+        trackerCategoryStore.createCategory(with: TrackerCategoryModel(title: name, trackers: []))
+        hiddenStubViews()
         tableView.reloadData()
     }
 }
