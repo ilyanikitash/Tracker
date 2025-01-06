@@ -13,10 +13,11 @@ final class TrackerRecordStore {
     private let trackerStore = TrackerStore()
     
     convenience init() {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
-            fatalError("AppDelegate not found")
-        }
-        let context = appDelegate.persistentContainer.viewContext
+//        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+//            fatalError("AppDelegate not found")
+//        }
+//        let context = appDelegate.persistentContainer.viewContext
+        let context = CoreDataManager.shared.persistentContainer.viewContext
         self.init(context: context)
     }
     
@@ -26,7 +27,7 @@ final class TrackerRecordStore {
     
     func addTrackerRecord(with trackerRecordModel: TrackerRecordModel) {
         let trackerRecordEntity = TrackerRecordCoreData(context: context)
-        trackerRecordEntity.id = trackerRecordModel.id
+        trackerRecordEntity.recordID = trackerRecordModel.id
         trackerRecordEntity.date = trackerRecordModel.date
         
         let trackerCoreData = trackerStore.getTrackerCoreData(by: trackerRecordModel.id)
@@ -46,7 +47,7 @@ final class TrackerRecordStore {
             return try context
                 .fetch(fetchRequest)
                 .compactMap { trackerRecordCoreData -> TrackerRecordModel? in
-                    guard let id = trackerRecordCoreData.id,
+                    guard let id = trackerRecordCoreData.recordID,
                           let date = trackerRecordCoreData.date else { return nil }
                     return TrackerRecordModel(id: id, date: date)
                 }
@@ -60,7 +61,9 @@ final class TrackerRecordStore {
         let fetchRequest: NSFetchRequest<TrackerRecordCoreData> = TrackerRecordCoreData.fetchRequest()
         fetchRequest.predicate = NSPredicate(
             format: "%K == %@ AND %K == %@",
+            #keyPath(TrackerRecordCoreData.recordID),
             trackerRecord.id as CVarArg,
+            #keyPath(TrackerRecordCoreData.date),
             trackerRecord.date as CVarArg
         )
 

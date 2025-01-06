@@ -35,10 +35,11 @@ final class TrackerStore: NSObject {
     weak var delegate: TrackerStoreDelegate?
     
     init(context: NSManagedObjectContext = {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
-        fatalError("Unable to retrieve AppDelegate")
-    }
-        return appDelegate.persistentContainer.viewContext
+//        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+//        fatalError("Unable to retrieve AppDelegate")
+//    }
+        //return appDelegate.persistentContainer.viewContext
+        return CoreDataManager.shared.persistentContainer.viewContext
     }()) {
         self.context = context
     }

@@ -14,7 +14,7 @@ struct TrackerRecordModel: Hashable {
 extension TrackerRecordModel {
     init?(from trackerRecordEntity: TrackerRecordCoreData) {
         guard
-              let id = trackerRecordEntity.id,
+            let id = trackerRecordEntity.recordID,
               let date = trackerRecordEntity.date
         else {
             return nil
