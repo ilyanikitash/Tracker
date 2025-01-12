@@ -130,6 +130,8 @@ final class NewHabitViewController: UIViewController {
                                           type: .habbit)
             newTrackerDelegate?.didTabCreateButton(categoryTitle: categoryName, trackerToAdd: newTracker)
             presentingViewController?.presentingViewController?.dismiss(animated: true, completion: nil)
+//            self.dismiss(animated: true)
+//            present(TabBarController(), animated: true)
         }
     }
     @objc

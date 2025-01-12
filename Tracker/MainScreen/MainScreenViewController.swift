@@ -89,6 +89,14 @@ final class MainScreenViewController: UIViewController {
         currentDate = datePicker.date
         reloadFiltredCategories(with: "")
     }
+    func updateViewControllers() {
+        print("!!!!!!!!!!!!! UPDESTAEEF")
+        newHabitViewController = NewHabitViewController()
+        newHabitViewController.newTrackerDelegate = self
+        
+        newIrregularEventViewController = NewIrregularEventViewController()
+        newIrregularEventViewController.newTrackerDelegate = self
+    }
     // MARK: - Private functions
     private func getAllCategories() {
         categories = trackerCategoryStore.fetchAllCategories()

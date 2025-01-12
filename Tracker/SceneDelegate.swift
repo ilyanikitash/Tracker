@@ -10,24 +10,38 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
-
+    private let userDefaults: UserDefaults = .standard
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+//        guard let windowScene = (scene as? UIWindowScene) else { return }
+//        
+//        let trackerStore = TrackerStore()
+//        let initialViewController: UIViewController
+//        
+//        if trackerStore.numberOfTrackers == 0 {
+//            initialViewController = OnboardingViewController()
+//        } else {
+//            initialViewController = TabBarController()
+//        }
+//        
+//        let window = UIWindow(windowScene: windowScene)
+//        window.rootViewController = initialViewController
+//        self.window = window
+//        window.makeKeyAndVisible()
+        let notFirstStart = userDefaults.bool(forKey: "notFirstStart")
+      
         guard let windowScene = (scene as? UIWindowScene) else { return }
+        window = UIWindow(windowScene: windowScene)
         
-        let trackerStore = TrackerStore()
-        let initialViewController: UIViewController
-        
-        if trackerStore.numberOfTrackers == 0 {
-            initialViewController = OnboardingViewController()
+        if notFirstStart {
+            let initialViewController = TabBarController()
+            window?.rootViewController = initialViewController
         } else {
-            initialViewController = TabBarController()
+            let initialViewController = OnboardingViewController()
+            window?.rootViewController = initialViewController
         }
         
-        let window = UIWindow(windowScene: windowScene)
-        window.rootViewController = initialViewController
-        self.window = window
-        window.makeKeyAndVisible()
+        window?.makeKeyAndVisible()
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

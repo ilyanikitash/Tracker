@@ -37,6 +37,7 @@ final class TabBarController: UITabBarController {
             }
         }
         
+        print("UPDATE")
         viewControllers = viewControllersList
         configureTabBarAppearance()
     }
