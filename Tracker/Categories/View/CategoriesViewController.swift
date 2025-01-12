@@ -54,6 +54,7 @@ final class CategoriesViewController: UIViewController {
     // MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
+        print("ViewDidLoad")
 //        getCategories()
         
         setupUserInterface()
@@ -77,7 +78,7 @@ final class CategoriesViewController: UIViewController {
             let cell = tableView.cellForRow(at: indexPath) as? NewTrackerTableViewCell
             cell?.image.isHidden = false
             delegate?.updateSelectedCategory(cell?.category ?? TrackerCategoryModel(title: "Важное", trackers: []))
-            dismiss(animated: true)
+            self.dismiss(animated: true, completion: nil)
         }
     }
     // MARK: - Bind
