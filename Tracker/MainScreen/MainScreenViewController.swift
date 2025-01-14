@@ -43,77 +43,44 @@ final class MainScreenViewController: UIViewController {
         return collectionView
     }()
     // MARK: - properties
-    var categories: [TrackerCategoryModel] = [
-        TrackerCategoryModel(title: "Важное", trackers: [
-            TrackerModel(id: UUID(), name: "Спать", color: .color1, emoji: "❤️", schedule: [.monday, .thursday, .wednesday, .tuesday, .friday, .saturday, .sunday], type: .habbit),
-            TrackerModel(id: UUID(), name: "Есть", color: .color7, emoji: "🍔", schedule: [.monday, .thursday, .wednesday, .tuesday, .friday, .saturday, .sunday], type: .habbit)
-        ]),
-        TrackerCategoryModel(title: "Неважное", trackers: [
-            TrackerModel(id: UUID(), name: "Грустить", color: .color4, emoji: "😱", schedule: [.monday, .thursday, .wednesday, .tuesday, .friday, .saturday, .sunday], type: .habbit)
-        ])
-    ]
-    var completedTrackers: [TrackerRecordModel] = []
+    var categories: [TrackerCategoryModel] = []
+    var completedTrackers: Set<TrackerRecordModel> = []
     private var filteredCategories: [TrackerCategoryModel] = []
+    private var trackerCategoryStore = TrackerCategoryStore()
+    private var trackerStore = TrackerStore()
+    private var trackerRecordStore = TrackerRecordStore()
     var currentDate: Date = Date()
+    lazy var newHabitViewController: NewHabitViewController = {
+        let viewController = NewHabitViewController()
+        viewController.newTrackerDelegate = self
+        return viewController
+    }()
+    lazy var newIrregularEventViewController: NewIrregularEventViewController = {
+        let viewController = NewIrregularEventViewController()
+        viewController.newTrackerDelegate = self
+        return viewController
+    }()
+    weak var newTrackerDelegate: NewTrackerViewControllerDelegate?
     // MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
-        NotificationCenter.default.addObserver(self, selector: #selector(didReceiveNewTrackerNotification(_:)), name: .didCreateNewTracker, object: nil)
+        trackerStore.delegate = self
+        getAllCategories()
+        if categories.isEmpty {
+            trackerCategoryStore.createCategory(with: TrackerCategoryModel(title: "Важное", trackers: []))
+            getAllCategories()
+        }
+        getCompletedTrackers()
+        
         setupNavigationBar()
         setupUserInterface()
         updateUI()
         setupCollectionView()
     }
     // MARK: - Selectors
-    @objc private func didReceiveNewTrackerNotification(_ notification: Notification) {
-        //guard let newTracker = notification.object as? TrackerModel else { return }
-        
-        var updatedCategories: [TrackerCategoryModel] = []
-        
-        var trackerAdded = false
-        
-        var newTracker: TrackerModel = TrackerModel(id: UUID(),
-                                                    name: "",
-                                                    color: .red,
-                                                    emoji: "",
-                                                    schedule: [.monday],
-                                                    type: .event)
-        var categoryName: String = ""
-        
-        if let userInfo = notification.userInfo {
-            if let tracker = userInfo["newTracker"] as? TrackerModel,
-               let category = userInfo["categoryName"] as? String
-            {
-                newTracker = tracker
-                categoryName = category
-            } else {
-                fatalError("Invalid notification userInfo")
-            }
-        }
-        for category in categories {
-            if category.title == categoryName {
-                var updatedTrackers = category.trackers
-                updatedTrackers.append(newTracker)
-                
-                let updatedCategory = TrackerCategoryModel(title: category.title, trackers: updatedTrackers)
-                updatedCategories.append(updatedCategory)
-                trackerAdded = true
-            } else {
-                updatedCategories.append(category)
-            }
-        }
-        
-        if !trackerAdded {
-            let newCategory = TrackerCategoryModel(title: categoryName, trackers: [newTracker])
-            updatedCategories.append(newCategory)
-        }
-        
-        categories = updatedCategories
-        updateUI()
-    }
-    
     @objc private func plusButtonTapped() {
-        let createTrackerVC = CreateTrackerViewController()
+        let createTrackerVC  = CreateTrackerViewController()
+        createTrackerVC.mainScreenViewController = self
         createTrackerVC.modalPresentationStyle = .popover
         present(createTrackerVC, animated: true, completion: nil)
     }
@@ -123,6 +90,14 @@ final class MainScreenViewController: UIViewController {
         reloadFiltredCategories(with: "")
     }
     // MARK: - Private functions
+    private func getAllCategories() {
+        categories = trackerCategoryStore.fetchAllCategories()
+    }
+    
+    private func getCompletedTrackers() {
+        completedTrackers  = Set(trackerRecordStore.fetchAllRecords())
+    }
+    
     private func updateUI() {
         collectionView.reloadData()
         datePickerValueChanged()
@@ -134,7 +109,6 @@ final class MainScreenViewController: UIViewController {
         if filterWeekday == 0 {
             filterWeekday = 7
         }
-        print("FILTER WEEKDAY: \(filterWeekday)")
         let filterText = text.lowercased()
         
         filteredCategories = categories.compactMap { category in
@@ -189,14 +163,16 @@ final class MainScreenViewController: UIViewController {
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: datePicker)
     }
     private func isTrackerCompletedToday(id: UUID) -> Bool {
+        let records = trackerRecordStore.fetchAllRecords()
+        
         if let tracker = filteredCategories
             .flatMap({ $0.trackers })
             .first(where: { $0.id == id }),
            tracker.type == .event {
-            return completedTrackers.contains { $0.id == id }
+            return records.contains { $0.id == id }
         }
 
-        return completedTrackers.contains {
+        return records.contains {
             $0.id == id && Calendar.current.isDate($0.date, inSameDayAs: currentDate)
         }
     }
@@ -277,7 +253,7 @@ extension MainScreenViewController: UICollectionViewDataSource {
         let completedDays: Int
 
         if tracker.type == .event {
-            completedDays = completedTrackers.contains { $0.id == tracker.id } ? 1 : 0 // 0 дней для новых событий
+            completedDays = completedTrackers.contains { $0.id == tracker.id } ? 1 : 0
         } else {
             completedDays = completedTrackers.filter { $0.id == tracker.id }.count
         }
@@ -308,26 +284,25 @@ extension MainScreenViewController: TrackerCellDelegate {
         guard let tracker = filteredCategories
                 .flatMap({ $0.trackers })
                 .first(where: { $0.id == id }) else { return }
-
-        if tracker.type == .habbit {
-            let isAlreadyCompleted = completedTrackers.contains {
-                $0.id == id && Calendar.current.isDate($0.date, inSameDayAs: currentDate)
+        
+        let record: TrackerRecordModel? = {
+            switch tracker.type {
+            case .habbit:
+                return trackerRecordStore.fetchAllRecords().first {$0.id == id && Calendar.current.isDate($0.date, inSameDayAs: currentDate)}
+            case .event:
+                return trackerRecordStore
+                    .fetchAllRecords()
+                    .first { $0.id == id }
             }
-            guard !isAlreadyCompleted else { return }
-
-            let trackerRecord = TrackerRecordModel(id: id, date: currentDate)
-            completedTrackers.append(trackerRecord)
+        }()
+        if let record {
+            trackerRecordStore.deleteRecord(for: record)
+        } else {
+            let newRecord = TrackerRecordModel(id: id, date: tracker.type == .habbit ? currentDate : Date.distantPast)
+            trackerRecordStore.addTrackerRecord(with: newRecord)
         }
-
-        else if tracker.type == .event {
-            if completedTrackers.contains(where: { $0.id == id }) {
-                uncompleteTracker(id: id, at: indexPath)
-                return
-            } else {
-                completedTrackers.append(TrackerRecordModel(id: id, date: Date.distantPast))
-            }
-        }
-
+        
+        getCompletedTrackers()
         collectionView.reloadItems(at: [indexPath])
         collectionView.reloadData()
     }
@@ -340,15 +315,23 @@ extension MainScreenViewController: TrackerCellDelegate {
                 .first(where: { $0.id == id }) else { return }
 
         if tracker.type == .habbit {
-            completedTrackers.removeAll { trackerRecord in
-                trackerRecord.id == id &&
-                Calendar.current.isDate(trackerRecord.date, inSameDayAs: currentDate)
+            if let record = trackerRecordStore
+                .fetchAllRecords()
+                .first(where: {
+                    $0.id == id && Calendar.current.isDate($0.date, inSameDayAs: currentDate)
+                }) {
+                trackerRecordStore.deleteRecord(for: record)
             }
         }
-
+        
         else if tracker.type == .event {
-            completedTrackers.removeAll { $0.id == id }
+            if let record = trackerRecordStore
+                .fetchAllRecords()
+                .first(where: { $0.id == id }) {
+                trackerRecordStore.deleteRecord(for: record)
+            }
         }
+        getCompletedTrackers()
 
         collectionView.reloadItems(at: [indexPath])
         collectionView.reloadData()
@@ -381,10 +364,6 @@ extension MainScreenViewController: UICollectionViewDelegateFlowLayout {
     }
 }
 
-extension Notification.Name {
-    static let didCreateNewTracker = Notification.Name("didCreateNewTracker")
-}
-
 extension MainScreenViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         guard let text = searchController.searchBar.text else { return }
@@ -397,5 +376,42 @@ extension MainScreenViewController: UISearchBarDelegate {
         guard let text = searchBar.text else { return }
         reloadFiltredCategories(with: text)
         searchBar.resignFirstResponder()
+    }
+}
+
+extension MainScreenViewController: NewTrackerViewControllerDelegate {
+    func didTabCreateButton(categoryTitle: String, trackerToAdd: TrackerModel) {
+        getAllCategories()
+        guard let categoryIndex = categories.firstIndex(where: { $0.title == categoryTitle }) else {
+            fatalError("couldn't find category \(categoryTitle)")
+        }
+        dismiss(animated: true)
+        do {
+            try trackerStore.addNewTracker(trackerToAdd, toCategory: categories[categoryIndex])
+            getAllCategories()
+            getCompletedTrackers()
+            reloadFiltredCategories(with: "")
+            
+        } catch {
+            print("error adding tracker: \(error.localizedDescription)")
+        }
+    }
+    
+    func didTabCancelButton() {
+        dismiss(animated: true)
+    }
+}
+
+extension MainScreenViewController: TrackerStoreDelegate {
+    func didUpdate(_ update: TrackerStoreUpdate) {
+        collectionView.performBatchUpdates {
+            let insertedIndexPaths = update.insertedIndexes.map { IndexPath(item: $0, section: 0) }
+            let deletedIndexPaths = update.deletedIndexes.map { IndexPath(item: $0, section: 0) }
+            
+            collectionView.insertItems(at: insertedIndexPaths)
+            collectionView.deleteItems(at: deletedIndexPaths)
+        } completion: { _ in
+            self.collectionView.reloadData()
+        }
     }
 }

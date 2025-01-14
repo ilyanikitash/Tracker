@@ -7,6 +7,8 @@
 import UIKit
 
 final class TabBarController: UITabBarController {
+    weak var onboardingViewController: OnboardingViewController?
+    
     private var viewControllersList: [UIViewController] {
             
         let mainVC = MainScreenViewController()
