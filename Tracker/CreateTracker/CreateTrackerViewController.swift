@@ -44,13 +44,14 @@ final class CreateTrackerViewController: UIViewController {
         guard let mainScreenVC = mainScreenViewController else { return }
 
         let mainScreenViewController = mainScreenVC.newHabitViewController
-        if let navigationController = self.navigationController {
-            navigationController.pushViewController(mainScreenViewController, animated: true)
-        } else {
-            mainScreenViewController.modalPresentationStyle = .pageSheet
-            present(mainScreenViewController, animated: true) {
-            }
-        }
+        
+//        if let navigationController = self.navigationController {
+//            navigationController.pushViewController(mainScreenViewController, animated: true)
+//        } else {
+//            mainScreenViewController.modalPresentationStyle = .pageSheet
+//            present(mainScreenViewController, animated: true) {
+//            }
+//        }
     }
     @objc
     private func irregularEventButtonTapped() {

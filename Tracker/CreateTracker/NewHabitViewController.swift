@@ -129,9 +129,13 @@ final class NewHabitViewController: UIViewController {
                                           schedule: selectedSchedule,
                                           type: .habbit)
             newTrackerDelegate?.didTabCreateButton(categoryTitle: categoryName, trackerToAdd: newTracker)
-            presentingViewController?.presentingViewController?.dismiss(animated: true, completion: nil)
+//            presentingViewController?.presentingViewController?.dismiss(animated: true, completion: nil)
 //            self.dismiss(animated: true)
-//            present(TabBarController(), animated: true)
+            
+//            let mainScreen = MainScreenViewController()   
+//            navigationController?.setViewControllers([mainScreen], animated: true)
+            
+            navigationController?.popViewController(animated: true)
         }
     }
     @objc

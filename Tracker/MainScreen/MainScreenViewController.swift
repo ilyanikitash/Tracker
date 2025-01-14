@@ -64,6 +64,7 @@ final class MainScreenViewController: UIViewController {
     // MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
+        print("!!!!!!!!!!!!! UPDESTAEEF")
         trackerStore.delegate = self
         getAllCategories()
         if categories.isEmpty {
@@ -89,14 +90,14 @@ final class MainScreenViewController: UIViewController {
         currentDate = datePicker.date
         reloadFiltredCategories(with: "")
     }
-    func updateViewControllers() {
-        print("!!!!!!!!!!!!! UPDESTAEEF")
-        newHabitViewController = NewHabitViewController()
-        newHabitViewController.newTrackerDelegate = self
-        
-        newIrregularEventViewController = NewIrregularEventViewController()
-        newIrregularEventViewController.newTrackerDelegate = self
-    }
+//    func updateViewControllers() {
+//        print("!!!!!!!!!!!!! UPDESTAEEF")
+//        newHabitViewController = NewHabitViewController()
+//        newHabitViewController.newTrackerDelegate = self
+//        
+//        newIrregularEventViewController = NewIrregularEventViewController()
+//        newIrregularEventViewController.newTrackerDelegate = self
+//    }
     // MARK: - Private functions
     private func getAllCategories() {
         categories = trackerCategoryStore.fetchAllCategories()
