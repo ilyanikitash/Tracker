@@ -50,16 +50,6 @@ final class MainScreenViewController: UIViewController {
     private var trackerStore = TrackerStore()
     private var trackerRecordStore = TrackerRecordStore()
     var currentDate: Date = Date()
-    lazy var newHabitViewController: NewHabitViewController = {
-        let viewController = NewHabitViewController()
-        viewController.newTrackerDelegate = self
-        return viewController
-    }()
-    lazy var newIrregularEventViewController: NewIrregularEventViewController = {
-        let viewController = NewIrregularEventViewController()
-        viewController.newTrackerDelegate = self
-        return viewController
-    }()
     weak var newTrackerDelegate: NewTrackerViewControllerDelegate?
     // MARK: - viewDidLoad
     override func viewDidLoad() {
@@ -90,14 +80,6 @@ final class MainScreenViewController: UIViewController {
         currentDate = datePicker.date
         reloadFiltredCategories(with: "")
     }
-//    func updateViewControllers() {
-//        print("!!!!!!!!!!!!! UPDESTAEEF")
-//        newHabitViewController = NewHabitViewController()
-//        newHabitViewController.newTrackerDelegate = self
-//        
-//        newIrregularEventViewController = NewIrregularEventViewController()
-//        newIrregularEventViewController.newTrackerDelegate = self
-//    }
     // MARK: - Private functions
     private func getAllCategories() {
         categories = trackerCategoryStore.fetchAllCategories()
@@ -414,11 +396,12 @@ extension MainScreenViewController: NewTrackerViewControllerDelegate {
 extension MainScreenViewController: TrackerStoreDelegate {
     func didUpdate(_ update: TrackerStoreUpdate) {
         collectionView.performBatchUpdates {
-            let insertedIndexPaths = update.insertedIndexes.map { IndexPath(item: $0, section: 0) }
-            let deletedIndexPaths = update.deletedIndexes.map { IndexPath(item: $0, section: 0) }
-            
-            collectionView.insertItems(at: insertedIndexPaths)
-            collectionView.deleteItems(at: deletedIndexPaths)
+            collectionView.reloadData()
+//            let insertedIndexPaths = update.insertedIndexes.map { IndexPath(item: $0, section: 0) }
+//            let deletedIndexPaths = update.deletedIndexes.map { IndexPath(item: $0, section: 0) }
+//            
+//            collectionView.insertItems(at: insertedIndexPaths)
+//            collectionView.deleteItems(at: deletedIndexPaths)
         } completion: { _ in
             self.collectionView.reloadData()
         }

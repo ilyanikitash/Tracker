@@ -13,7 +13,6 @@ protocol CategoriesViewControllerDelegate: AnyObject {
 final class CategoriesViewController: UIViewController {
     // MARK: - private properties
     private var viewModel = CategoriesViewModel()
-//    private var categories: [TrackerCategoryModel] = []
     private let trackerCategoryStore = TrackerCategoryStore()
     // MARK: - lazy properties (UI Elements)
     private lazy var topLabel: UILabel = {
@@ -54,12 +53,9 @@ final class CategoriesViewController: UIViewController {
     // MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("ViewDidLoad")
-//        getCategories()
         
         setupUserInterface()
         setupTableView()
-//        hiddenStubViews()
         
         bind()
     }
@@ -105,15 +101,11 @@ final class CategoriesViewController: UIViewController {
             }
             DispatchQueue.main.async {
                 self.delegate?.updateSelectedCategory(selectedCategory)
-                print("ПОЛЬЗОВАТЕЛЬ ВЫБРАЛ КАТЕГОРИЮ: \(selectedCategory)")
                 self.dismiss(animated: true, completion: nil)
             }
         }
     }
     // MARK: - Private functions
-//    private func getCategories() {
-//        categories = trackerCategoryStore.fetchAllCategories()
-//    }
     private func setupTableView() {
         tableView.dataSource = self
         tableView.delegate = self
@@ -138,17 +130,6 @@ final class CategoriesViewController: UIViewController {
         setupTableViewConstraints()
         
     }
-//    private func hiddenStubViews() {
-//        if categories.count == 0 {
-//            stubImage.isHidden = false
-//            stubLabel.isHidden = false
-//            tableView.isHidden = true
-//        } else {
-//            stubImage.isHidden = true
-//            stubLabel.isHidden = true
-//            tableView.isHidden = false
-//        }
-//    }
     // MARK: - Contraints
     private func setupLabelConstraints() {
         topLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -222,8 +203,6 @@ extension CategoriesViewController: UITableViewDelegate {
 extension CategoriesViewController: NewCategoryViewControllerDelegate {
     func addCategory(with name: String) {
         viewModel.addCategory(name: name)
-//        categories.append(TrackerCategoryModel(title: name, trackers: []))
-//        trackerCategoryStore.createCategory(with: TrackerCategoryModel(title: name, trackers: []))
         tableView.reloadData()
     }
 }

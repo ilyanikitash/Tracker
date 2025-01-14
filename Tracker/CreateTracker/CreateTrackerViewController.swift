@@ -43,28 +43,20 @@ final class CreateTrackerViewController: UIViewController {
     private func habitButtonTapped() {
         guard let mainScreenVC = mainScreenViewController else { return }
 
-        let mainScreenViewController = mainScreenVC.newHabitViewController
+        let newHabbitVC = NewHabitViewController()
+        newHabbitVC.newTrackerDelegate = mainScreenVC
+        newHabbitVC.modalPresentationStyle = .popover
+        present(newHabbitVC, animated: true, completion: nil)
         
-//        if let navigationController = self.navigationController {
-//            navigationController.pushViewController(mainScreenViewController, animated: true)
-//        } else {
-//            mainScreenViewController.modalPresentationStyle = .pageSheet
-//            present(mainScreenViewController, animated: true) {
-//            }
-//        }
     }
     @objc
     private func irregularEventButtonTapped() {
         guard let mainScreenVC = mainScreenViewController else { return }
 
-        let mainScreenViewController = mainScreenVC.newIrregularEventViewController
-        if let navigationController = self.navigationController {
-            navigationController.pushViewController(mainScreenViewController, animated: true)
-        } else {
-            mainScreenViewController.modalPresentationStyle = .pageSheet
-            present(mainScreenViewController, animated: true) {
-            }
-        }
+        let newIrregularEventVC = NewIrregularEventViewController()
+        newIrregularEventVC.newTrackerDelegate = mainScreenVC
+        newIrregularEventVC.modalPresentationStyle = .popover
+        present(newIrregularEventVC, animated: true, completion: nil)
     }
     // MARK: - Private functions
     private func setupUserInterface() {

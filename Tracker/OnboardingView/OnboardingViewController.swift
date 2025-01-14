@@ -69,8 +69,8 @@ final class OnboardingViewController: UIPageViewController {
     }()
     
     private let pagesText: [String] = [
-        "Welcome to Tracker",
-        "Track your expenses and income"
+        "Отслеживайте только то, что хотите",
+        "Даже если это не литры воды и йога"
     ]
     
     override func viewDidLoad() {
