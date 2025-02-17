@@ -74,17 +74,17 @@ final class CategoriesViewController: UIViewController {
             let cell = tableView.cellForRow(at: indexPath) as? NewTrackerTableViewCell
             cell?.image.isHidden = false
             delegate?.updateSelectedCategory(cell?.category ?? TrackerCategoryModel(title: "Важное", trackers: []))
-            self.dismiss(animated: true, completion: nil)
+            dismiss(animated: true, completion: nil)
         }
     }
     // MARK: - Bind
     
-    func bind() {
+    private func bind() {
         
         viewModel.loadCategoriesFromCoreData()
         
         viewModel.didUpdateCategories = { [weak self] in
-            guard let self else {return}
+            guard let self else { return }
             stubImage.isHidden = !viewModel.categories.isEmpty
             stubLabel.isHidden = !viewModel.categories.isEmpty
             tableView.reloadData()

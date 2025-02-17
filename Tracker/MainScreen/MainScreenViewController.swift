@@ -54,7 +54,6 @@ final class MainScreenViewController: UIViewController {
     // MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("!!!!!!!!!!!!! UPDESTAEEF")
         trackerStore.delegate = self
         getAllCategories()
         if categories.isEmpty {
