@@ -129,7 +129,7 @@ final class NewHabitViewController: UIViewController {
                                           schedule: selectedSchedule,
                                           type: .habbit)
             newTrackerDelegate?.didTabCreateButton(categoryTitle: categoryName, trackerToAdd: newTracker)
-            presentingViewController?.presentingViewController?.dismiss(animated: true, completion: nil)
+            navigationController?.popViewController(animated: true)
         }
     }
     @objc

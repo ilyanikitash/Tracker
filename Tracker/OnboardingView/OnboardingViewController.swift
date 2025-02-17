@@ -8,7 +8,7 @@
 import UIKit
 
 final class OnboardingViewController: UIPageViewController {
-    
+    private let userDefaults: UserDefaults = .standard
     private lazy var pages: [UIViewController] = {
         let blueVC = UIViewController()
         let blueBackgroundImage = setupBackgroundImage(named: "BackgroundBlue")
@@ -69,8 +69,8 @@ final class OnboardingViewController: UIPageViewController {
     }()
     
     private let pagesText: [String] = [
-        "Welcome to Tracker",
-        "Track your expenses and income"
+        "Отслеживайте только то, что хотите",
+        "Даже если это не литры воды и йога"
     ]
     
     override func viewDidLoad() {
@@ -88,13 +88,14 @@ final class OnboardingViewController: UIPageViewController {
     
     @objc
     private func didTapStartButton() {
-        let trackerCreateVC = TabBarController()
-        trackerCreateVC.onboardingViewController = self
-        if let navigationController = self.navigationController {
-            navigationController.pushViewController(trackerCreateVC, animated: true)
-        } else {
-            trackerCreateVC.modalPresentationStyle = .fullScreen
-            present(trackerCreateVC, animated: true, completion: nil)
+        let controller = TabBarController()
+        controller.modalPresentationStyle = .fullScreen
+        self.present(controller, animated: true, completion: nil)
+        userDefaults.setValue(true, forKey: "notFirstStart")
+        
+        if let window = UIApplication.shared.windows.first {
+            let initialViewController = TabBarController()
+            window.rootViewController = initialViewController
         }
     }
     
