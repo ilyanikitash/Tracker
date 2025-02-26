@@ -5,6 +5,7 @@
 //  Created by Ilya Nikitash on 30/10/24.
 //
 import UIKit
+import YandexMobileMetrica
 
 final class MainScreenViewController: UIViewController {
     // MARK: - lazy properties (UI Elements)
@@ -69,6 +70,10 @@ final class MainScreenViewController: UIViewController {
     }
     // MARK: - Selectors
     @objc private func plusButtonTapped() {
+        YMMYandexMetrica.reportEvent("add_tracker", onFailure: { (error) in
+            print("DID FAIL TO REPORT EVENT: %@", "add_tracker")
+            print("REPORT ERROR: %@", error.localizedDescription)
+        })
         let createTrackerVC  = CreateTrackerViewController()
         createTrackerVC.mainScreenViewController = self
         createTrackerVC.modalPresentationStyle = .popover
@@ -76,6 +81,10 @@ final class MainScreenViewController: UIViewController {
     }
     
     @objc private func datePickerValueChanged() {
+        YMMYandexMetrica.reportEvent("date_picker_value_change", onFailure: { (error) in
+            print("DID FAIL TO REPORT EVENT: %@", "date_picker_value_change")
+            print("REPORT ERROR: %@", error.localizedDescription)
+        })
         currentDate = datePicker.date
         reloadFiltredCategories(with: "")
     }
