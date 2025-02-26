@@ -20,7 +20,7 @@ final class MainScreenViewController: UIViewController {
     }()
     private lazy var startLabel: UILabel = {
        let label = UILabel()
-        label.text = "Что будем отслеживать?"
+        label.text = NSLocalizedString("whatTrack", comment: "")
         label.font = .systemFont(ofSize: 12, weight: .medium)
         label.textColor = .customBlack
         return label
@@ -30,7 +30,7 @@ final class MainScreenViewController: UIViewController {
         datePicker.datePickerMode = .date
         datePicker.preferredDatePickerStyle = .compact
         datePicker.addTarget(self, action: #selector(datePickerValueChanged), for: .valueChanged)
-        datePicker.locale = Locale(identifier: "ru_RU")
+        datePicker.locale = .current
         datePicker.maximumDate = Date()
         return datePicker
     }()
@@ -57,7 +57,7 @@ final class MainScreenViewController: UIViewController {
         trackerStore.delegate = self
         getAllCategories()
         if categories.isEmpty {
-            trackerCategoryStore.createCategory(with: TrackerCategoryModel(title: "Важное", trackers: []))
+            trackerCategoryStore.createCategory(with: TrackerCategoryModel(title: NSLocalizedString("important.title", comment: ""), trackers: []))
             getAllCategories()
         }
         getCompletedTrackers()
@@ -128,7 +128,7 @@ final class MainScreenViewController: UIViewController {
         let isEmpty = filteredCategories.isEmpty
         if searchBarText != "" {
             startImageView.image = UIImage(named: "ErrorImage")
-            startLabel.text = "Ничего не найдено"
+            startLabel.text = NSLocalizedString("nothing", comment: "")
         }
         startImageView.isHidden = !isEmpty
         startLabel.isHidden = !isEmpty
@@ -138,14 +138,14 @@ final class MainScreenViewController: UIViewController {
         navigationItem.leftBarButtonItem = plusButton
         
         navigationController?.navigationBar.prefersLargeTitles = true
-        navigationItem.title = "Трекеры"
+        navigationItem.title = NSLocalizedString("trackers", comment: "")
         navigationItem.largeTitleDisplayMode = .always
         
         let searchController = UISearchController(searchResultsController: nil)
         searchController.searchResultsUpdater = self
         searchController.searchBar.delegate = self
         searchController.obscuresBackgroundDuringPresentation = false
-        searchController.searchBar.placeholder = "Поиск"
+        searchController.searchBar.placeholder = NSLocalizedString("search", comment: "")
         navigationItem.searchController = searchController
         definesPresentationContext = true
         navigationItem.searchController?.hidesNavigationBarDuringPresentation = false

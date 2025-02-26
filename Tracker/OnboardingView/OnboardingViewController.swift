@@ -58,7 +58,7 @@ final class OnboardingViewController: UIPageViewController {
     
     private lazy var startButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Вот это технологии!", for: .normal)
+        button.setTitle(NSLocalizedString("onboarding.title", comment: ""), for: .normal)
         button.backgroundColor = .customBlack
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 16
@@ -69,8 +69,8 @@ final class OnboardingViewController: UIPageViewController {
     }()
     
     private let pagesText: [String] = [
-        "Отслеживайте только то, что хотите",
-        "Даже если это не литры воды и йога"
+        NSLocalizedString("pages.text1", comment: ""),
+        NSLocalizedString("pages.text2", comment: "")
     ]
     
     override func viewDidLoad() {

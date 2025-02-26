@@ -10,7 +10,7 @@ final class NewIrregularEventViewController: UIViewController {
     // MARK: - lazy properties (UI Elements)
     private lazy var topTitleLabel: UILabel = {
         let label = UILabel()
-        label.text = "Новое нерегулярное событие"
+        label.text = NSLocalizedString("newIrregularEvent", comment: "")
         label.font = .systemFont(ofSize: 16, weight: .medium)
         label.textColor = .customBlack
         return label
@@ -24,7 +24,7 @@ final class NewIrregularEventViewController: UIViewController {
     private lazy var textField: UITextField = {
         let textField = UITextField()
         textField.clearButtonMode = .whileEditing
-        textField.placeholder = "Введите название трекера"
+        textField.placeholder = NSLocalizedString("enterTrackerName", comment: "")
         textField.font = .systemFont(ofSize: 17, weight: .regular)
         textField.addTarget(self, action: #selector(checkCreateButton), for: .editingChanged)
         return textField
@@ -37,7 +37,7 @@ final class NewIrregularEventViewController: UIViewController {
     }()
     private lazy var cancelButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Отмена", for: .normal)
+        button.setTitle(NSLocalizedString("cancel", comment: ""), for: .normal)
         button.setTitleColor(.customRed, for: .normal)
         button.backgroundColor = .white
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
@@ -49,7 +49,7 @@ final class NewIrregularEventViewController: UIViewController {
     }()
     private lazy var createButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Создать", for: .normal)
+        button.setTitle(NSLocalizedString("create", comment: ""), for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.backgroundColor = .customGray
         button.layer.cornerRadius = 16
@@ -72,7 +72,7 @@ final class NewIrregularEventViewController: UIViewController {
     }()
     private lazy var colorLabel: UILabel = {
         let emojiLabel = UILabel()
-        emojiLabel.text = "Цвет"
+        emojiLabel.text = NSLocalizedString("color", comment: "")
         emojiLabel.font = UIFont.systemFont(ofSize: 19, weight: .bold)
         return emojiLabel
     }()
@@ -318,7 +318,7 @@ extension NewIrregularEventViewController: UITableViewDataSource {
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "optionCell")
-        cell.textLabel?.text = "Категория"
+        cell.textLabel?.text = NSLocalizedString("category.title", comment: "")
         cell.detailTextLabel?.text = selectedCategory?.title ?? ""
         cell.detailTextLabel?.font = UIFont.systemFont(ofSize: 17)
         cell.detailTextLabel?.textColor = .customGray

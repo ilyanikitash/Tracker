@@ -7,7 +7,8 @@
 
 import UIKit
 import CoreData
-
+import YandexMobileMetrica
+//aba820ae-cc15-4240-bdae-f7899c2e1fd3
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
@@ -16,6 +17,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         ScheduleValueTransformer.register()
         TrackerTypeValueTransformer.register()
+        guard let configuration = YMMYandexMetricaConfiguration(apiKey: "aba820ae-cc15-4240-bdae-f7899c2e1fd3") else {
+                return true
+            }
+                
+        YMMYandexMetrica.activate(with: configuration)
         return true
     }
 

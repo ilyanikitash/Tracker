@@ -1,0 +1,50 @@
+/* 
+  Localizable.strings
+  Tracker
+
+  Created by Ilya Nikitash on 2/20/25.
+  
+*/
+"category.title" = "Category";
+"stubTextCategories" = "Habits and events can be combined by meaning";
+"addCategory.title" = "Add category";
+"important.title" = "Important";
+"newCategory.title" = "New category";
+"done" = "Done";
+"enterCategory" = "Enter category name";
+"createTracker.title" = "Tracker creating";
+"habit" = "Habit";
+"irregularEvent" = "Irregular Event";
+"newHabit" = "New Habit";
+"enterTrackerName" = "Enter tracker name";
+"cancel" = "Cancel";
+"create" = "Create";
+"color" = "Color";
+"schedule" = "Schedule";
+"mo" = "Mo";
+"tu" = "We";
+"we" = "Th";
+"th" = "Th";
+"fr" = "Fr";
+"sa" = "Sa";
+"su" = "Su";
+"newIrregularEvent" = "New irregular event";
+"whatTrack" = "What are we going to track?";
+"day" = "day";
+"days_1" = "days";
+"days_2" = "days";
+"nothing" = "Nothing found";
+"trackers" = "Trackers";
+"search" = "Search";
+"onboarding.title" = "Now that's technology!";
+"pages.text1" = "Track only what you want to track";
+"pages.text2" = "Even if it's not liters of water and yoga.";
+"monday" = "Monday";
+"tuesday" = "Tuesday";
+"wednesday" = "Wednesday";
+"thursday" = "Thursday";
+"friday" = "Friday";
+"saturday" = "Saturday";
+"sunday" = "Sunday";
+"statistic" = "Statistic";
+

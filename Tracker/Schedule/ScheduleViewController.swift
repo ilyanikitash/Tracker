@@ -14,13 +14,13 @@ final class ScheduleViewController: UIViewController {
     // MARK: - lazy properties (UI Elements)
     private lazy var topLabel: UILabel = {
         let label = UILabel()
-        label.text = "Расписание"
+        label.text = NSLocalizedString("schedule", comment: "")
         label.font = .systemFont(ofSize: 16)
         return label
     }()
     private lazy var doneButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Готово", for: .normal)
+        button.setTitle(NSLocalizedString("done", comment: ""), for: .normal)
         button.backgroundColor = .customBlack
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         button.layer.cornerRadius = 16
@@ -35,7 +35,15 @@ final class ScheduleViewController: UIViewController {
     }()
     // MARK: - properties
     private var selectedDays = Set<Weekday>()
-    private let daysOfWeek = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"]
+    private let daysOfWeek = [
+        NSLocalizedString("monday", comment: ""),
+        NSLocalizedString("tuesday", comment: ""),
+        NSLocalizedString("wednesday", comment: ""),
+        NSLocalizedString("thursday", comment: ""),
+        NSLocalizedString("friday", comment: ""),
+        NSLocalizedString("saturday", comment: ""),
+        NSLocalizedString("sunday", comment: "")
+    ]
     weak var delegate: SelectScheduleItemDelegate?
     // MARK: - viewDidLoad
     override func viewDidLoad() {

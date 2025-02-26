@@ -11,13 +11,15 @@ final class CreateTrackerViewController: UIViewController {
     // MARK: - lazy properties (UI Elements)
     lazy var label: UILabel = {
         let label = UILabel()
-        label.text = "Создание трекера"
+        let labelText = NSLocalizedString("createTracker.title", comment: "")
+        label.text = labelText
         label.font = .systemFont(ofSize: 16)
         return label
     }()
     private lazy var habitButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Привычка", for: .normal)
+        let buttonText = NSLocalizedString("habit", comment: "")
+        button.setTitle(buttonText, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16)
         button.backgroundColor = .customBlack
         button.layer.cornerRadius = 16
@@ -26,7 +28,8 @@ final class CreateTrackerViewController: UIViewController {
     }()
     lazy var irregularEventButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Нерегулярные событие", for: .normal)
+        let buttonText = NSLocalizedString("irregularEvent", comment: "")
+        button.setTitle(buttonText, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16)
         button.backgroundColor = .customBlack
         button.layer.cornerRadius = 16

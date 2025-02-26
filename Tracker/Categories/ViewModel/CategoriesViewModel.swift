@@ -40,7 +40,7 @@ final class CategoriesViewModel {
             try trackerCategoryStore.deleteCategory(byTitle: category)
             categories.removeAll{$0.title == category}
         } catch {
-            fatalError("ОШИБКА УДАЛЕНИЯ КАТЕГОРИИ: \(error.localizedDescription)")
+            fatalError("ERROR: \(error.localizedDescription)")
         }
     }
     

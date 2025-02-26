@@ -10,7 +10,7 @@ final class StatisticsViewController: UIViewController {
     // MARK: - lazy properties (UI Elements)
     private lazy var statisticLabel: UILabel = {
         let label = UILabel()
-        label.text = "Статистика"
+        label.text = NSLocalizedString("statistic", comment: "")
         label.font = .systemFont(ofSize: 34, weight: .bold)
         label.textColor = .customBlack
         return label

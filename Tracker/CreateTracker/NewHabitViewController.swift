@@ -10,14 +10,16 @@ final class NewHabitViewController: UIViewController {
     // MARK: - lazy properties (UI Elements)
     private lazy var topLabel: UILabel = {
         let label = UILabel()
-        label.text = "Новая привычка"
+        let labelText = NSLocalizedString("newHabit", comment: "")
+        label.text = labelText
         label.font = .systemFont(ofSize: 16)
         return label
     }()
     private lazy var habitsNameTextField: UITextField = {
         let textField = UITextField()
         textField.clearButtonMode = .whileEditing
-        textField.placeholder = "Введите название трекера"
+        let textFieldPlaceholder = NSLocalizedString("enterTrackerName", comment: "")
+        textField.placeholder = textFieldPlaceholder
         textField.addTarget(self, action: #selector(checkCreateButton), for: .editingChanged)
         return textField
     }()
@@ -35,7 +37,8 @@ final class NewHabitViewController: UIViewController {
     }()
     private lazy var cancelButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Отмена", for: .normal)
+        let buttonText = NSLocalizedString("cancel", comment: "")
+        button.setTitle(buttonText, for: .normal)
         button.setTitleColor(.customRed, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         button.backgroundColor = .white
@@ -47,7 +50,8 @@ final class NewHabitViewController: UIViewController {
     }()
     private lazy var createButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Создать", for: .normal)
+        let buttonText = NSLocalizedString("create", comment: "")
+        button.setTitle(buttonText, for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.backgroundColor = .customGray
         button.layer.cornerRadius = 16
@@ -70,7 +74,8 @@ final class NewHabitViewController: UIViewController {
     }()
     private lazy var colorLabel: UILabel = {
         let emojiLabel = UILabel()
-        emojiLabel.text = "Цвет"
+        let labelText = NSLocalizedString("color", comment: "")
+        emojiLabel.text = labelText
         emojiLabel.font = UIFont.systemFont(ofSize: 19, weight: .bold)
         return emojiLabel
     }()
@@ -94,7 +99,11 @@ final class NewHabitViewController: UIViewController {
         "😊", "😻", "🌺", "🐶", "❤️", "😱", "😇", "😡", "🥶", "🤔", "🙌", "🍔", "🥦", "🏓", "🥇", "🎸", "🏝", "😪"
     ]
     private let colors: [UIColor] = [.color1, .color2, .color3, .color4, .color5, .color6, .color7, .color8, .color9, .color10, .color11, .color12, .color13, .color14, .color15, .color16, .color17, .color18]
-    private let tableRowsNames = ["Категория", "Расписание"]
+    private let categoryString = NSLocalizedString("category.title", comment: "")
+    private let scheduleString = NSLocalizedString("schedule", comment: "")
+    private lazy var tableRowsNames: [String] = {
+        return [categoryString, scheduleString]
+    }()
     private var selectedCategory: TrackerCategoryModel?
     private var selectedSchedule = [Weekday]()
     private var selectedEmoji: String?
@@ -216,15 +225,15 @@ final class NewHabitViewController: UIViewController {
     }
     private func selectedScheduleString() -> String {
         guard !selectedSchedule.isEmpty else { return "" }
-        
+       
         let weekdayShortNames: [Weekday: String] = [
-            .monday: "Пн",
-            .tuesday: "Вт",
-            .wednesday: "Ср",
-            .thursday: "Чт",
-            .friday: "Пт",
-            .saturday: "Сб",
-            .sunday: "Вс"
+            .monday: NSLocalizedString("mo", comment: ""),
+            .tuesday: NSLocalizedString("tu", comment: ""),
+            .wednesday: NSLocalizedString("we", comment: ""),
+            .thursday: NSLocalizedString("th", comment: ""),
+            .friday: NSLocalizedString("fr", comment: ""),
+            .saturday: NSLocalizedString("sa", comment: ""),
+            .sunday: NSLocalizedString("su", comment: "")
         ]
         selectedSchedule.sort { $0.rawValue < $1.rawValue }
         let shortNames = selectedSchedule.compactMap { weekdayShortNames[$0] }
@@ -338,12 +347,14 @@ extension NewHabitViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "optionCell")
         if indexPath.row == 0 {
-            cell.textLabel?.text = "Категория"
+            let labelText = NSLocalizedString("category.title", comment: "")
+            cell.textLabel?.text = labelText
             cell.detailTextLabel?.text = selectedCategory?.title ?? ""
             cell.detailTextLabel?.font = UIFont.systemFont(ofSize: 17)
             cell.detailTextLabel?.textColor = .customGray
         } else if indexPath.row == 1 {
-            cell.textLabel?.text = "Расписание"
+            let labelText = NSLocalizedString("schedule", comment: "")
+            cell.textLabel?.text = labelText
             cell.detailTextLabel?.text = selectedScheduleString()
             cell.detailTextLabel?.font = UIFont.systemFont(ofSize: 17)
             cell.detailTextLabel?.textColor = .customGray
