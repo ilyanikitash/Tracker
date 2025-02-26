@@ -21,6 +21,7 @@ final class ScheduleViewController: UIViewController {
     private lazy var doneButton: UIButton = {
         let button = UIButton()
         button.setTitle(NSLocalizedString("done", comment: ""), for: .normal)
+        button.setTitleColor(.customWhite, for: .normal)
         button.backgroundColor = .customBlack
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         button.layer.cornerRadius = 16
@@ -65,7 +66,7 @@ final class ScheduleViewController: UIViewController {
         tableView.delegate = self
     }
     private func setupView() {
-        view.backgroundColor = .white
+        view.backgroundColor = .customWhite
         
         view.addSubview(topLabel)
         setupTopLabelConstraints()
@@ -121,7 +122,7 @@ extension ScheduleViewController: UITableViewDataSource {
         cell.switchControl.addTarget(self, action: #selector(didChangeSwitch(_:)), for: .valueChanged)
         cell.switchControl.isOn = selectedDays.contains(weekday)
         cell.selectionStyle = .none
-        cell.backgroundColor = .customSystemGray
+        cell.backgroundColor = .customBackground
         
         return cell
     }

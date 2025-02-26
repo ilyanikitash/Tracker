@@ -24,6 +24,7 @@ final class NewCategoryViewController: UIViewController {
         button.isEnabled = false
         let buttonText = NSLocalizedString("done", comment: "")
         button.setTitle(buttonText, for: .normal)
+        button.setTitleColor(.customWhite, for: .normal)
         button.backgroundColor = .customGray
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         button.layer.cornerRadius = 16
@@ -40,7 +41,7 @@ final class NewCategoryViewController: UIViewController {
     }()
     private lazy var textFieldView: UIView = {
         let view = UIView()
-        view.backgroundColor = .customSystemGray
+        view.backgroundColor = .customBackground
         view.layer.cornerRadius = 16
         return view
     }()
@@ -52,7 +53,7 @@ final class NewCategoryViewController: UIViewController {
         setupUserInterface()
     }
     private func setupUserInterface() {
-        view.backgroundColor = .white
+        view.backgroundColor = .customWhite
         
         view.addSubview(topLabel)
         setupLabelConstraints()

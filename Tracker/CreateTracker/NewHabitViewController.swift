@@ -20,18 +20,19 @@ final class NewHabitViewController: UIViewController {
         textField.clearButtonMode = .whileEditing
         let textFieldPlaceholder = NSLocalizedString("enterTrackerName", comment: "")
         textField.placeholder = textFieldPlaceholder
+        textField.textColor = .customGray
         textField.addTarget(self, action: #selector(checkCreateButton), for: .editingChanged)
         return textField
     }()
     private lazy var habitsNameView: UIView = {
         let view = UIView()
-        view.backgroundColor = .customSystemGray
+        view.backgroundColor = .customBackground
         view.layer.cornerRadius = 16
         return view
     }()
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
-        tableView.backgroundColor = .customSystemGray
+        tableView.backgroundColor = .customBackground
         tableView.layer.cornerRadius = 16
         return tableView
     }()
@@ -41,7 +42,7 @@ final class NewHabitViewController: UIViewController {
         button.setTitle(buttonText, for: .normal)
         button.setTitleColor(.customRed, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
-        button.backgroundColor = .white
+        button.backgroundColor = .customWhite
         button.layer.cornerRadius = 16
         button.layer.borderWidth = 1.0
         button.layer.borderColor = UIColor.customRed.cgColor
@@ -52,7 +53,7 @@ final class NewHabitViewController: UIViewController {
         let button = UIButton()
         let buttonText = NSLocalizedString("create", comment: "")
         button.setTitle(buttonText, for: .normal)
-        button.setTitleColor(.white, for: .normal)
+        button.setTitleColor(.customWhite, for: .normal)
         button.backgroundColor = .customGray
         button.layer.cornerRadius = 16
         button.addTarget(self, action: #selector(didTapCreateButton), for: .touchUpInside)
@@ -192,7 +193,7 @@ final class NewHabitViewController: UIViewController {
         tableView.delegate = self
     }
     private func setupUserInterface() {
-        view.backgroundColor = .white
+        view.backgroundColor = .customWhite
         
         view.addSubview(topLabel)
         setupTopLabelConstraints()
@@ -351,17 +352,17 @@ extension NewHabitViewController: UITableViewDataSource {
             cell.textLabel?.text = labelText
             cell.detailTextLabel?.text = selectedCategory?.title ?? ""
             cell.detailTextLabel?.font = UIFont.systemFont(ofSize: 17)
-            cell.detailTextLabel?.textColor = .customGray
+            cell.detailTextLabel?.textColor = .customBlack
         } else if indexPath.row == 1 {
             let labelText = NSLocalizedString("schedule", comment: "")
             cell.textLabel?.text = labelText
             cell.detailTextLabel?.text = selectedScheduleString()
             cell.detailTextLabel?.font = UIFont.systemFont(ofSize: 17)
-            cell.detailTextLabel?.textColor = .customGray
+            cell.detailTextLabel?.textColor = .customBlack
         }
 
         cell.accessoryType = .disclosureIndicator
-        cell.backgroundColor = .customSystemGray
+        cell.backgroundColor = .customBackground
         return cell
     }
 }
@@ -456,8 +457,8 @@ extension NewHabitViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
         let cell = collectionView.cellForItem(at: indexPath) as? TrackerCollectionViewCell
-        cell?.titleLabel.backgroundColor = .white
-        cell?.colorView.layer.borderColor = UIColor.white.cgColor
+        cell?.titleLabel.backgroundColor = .customWhite
+        cell?.colorView.layer.borderColor = UIColor.customWhite.cgColor
         checkCreateButton()
     }
 }

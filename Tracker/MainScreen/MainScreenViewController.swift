@@ -144,6 +144,7 @@ final class MainScreenViewController: UIViewController {
         collectionView.isHidden = isEmpty
     }
     private func setupNavigationBar() {
+        navigationController?.navigationBar.backgroundColor = .customWhite
         navigationItem.leftBarButtonItem = plusButton
         
         navigationController?.navigationBar.prefersLargeTitles = true
@@ -177,7 +178,7 @@ final class MainScreenViewController: UIViewController {
     }
     private func setupUserInterface() {
         setupDatePickerConstraints()
-        view.backgroundColor = .white
+        view.backgroundColor = .customWhite
         
         view.addSubview(startImageView)
         setupStartImageViewConstraints()

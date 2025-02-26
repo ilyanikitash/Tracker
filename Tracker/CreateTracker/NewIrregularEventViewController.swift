@@ -17,7 +17,7 @@ final class NewIrregularEventViewController: UIViewController {
     }()
     private lazy var textFieldView: UIView = {
         let view = UIView()
-        view.backgroundColor = .customSystemGray
+        view.backgroundColor = .customBackground
         view.layer.cornerRadius = 16
         return view
     }()
@@ -26,12 +26,13 @@ final class NewIrregularEventViewController: UIViewController {
         textField.clearButtonMode = .whileEditing
         textField.placeholder = NSLocalizedString("enterTrackerName", comment: "")
         textField.font = .systemFont(ofSize: 17, weight: .regular)
+        textField.textColor = .customGray
         textField.addTarget(self, action: #selector(checkCreateButton), for: .editingChanged)
         return textField
     }()
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
-        tableView.backgroundColor = .customSystemGray
+        tableView.backgroundColor = .customBackground
         tableView.layer.cornerRadius = 16
         return tableView
     }()
@@ -39,7 +40,7 @@ final class NewIrregularEventViewController: UIViewController {
         let button = UIButton()
         button.setTitle(NSLocalizedString("cancel", comment: ""), for: .normal)
         button.setTitleColor(.customRed, for: .normal)
-        button.backgroundColor = .white
+        button.backgroundColor = .customWhite
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         button.layer.cornerRadius = 16
         button.layer.borderWidth = 1.0
@@ -50,7 +51,7 @@ final class NewIrregularEventViewController: UIViewController {
     private lazy var createButton: UIButton = {
         let button = UIButton()
         button.setTitle(NSLocalizedString("create", comment: ""), for: .normal)
-        button.setTitleColor(.white, for: .normal)
+        button.setTitleColor(.customWhite, for: .normal)
         button.backgroundColor = .customGray
         button.layer.cornerRadius = 16
         button.addTarget(self, action: #selector(didTapCreateButton), for: .touchUpInside)
@@ -181,7 +182,7 @@ final class NewIrregularEventViewController: UIViewController {
         colorCollectionView.heightAnchor.constraint(equalToConstant: colorHeight).isActive = true
     }
     private func setupUserInterface() {
-        view.backgroundColor = .white
+        view.backgroundColor = .customWhite
         
         view.addSubview(topTitleLabel)
         setupTopTitleLabelConstraints()
@@ -321,9 +322,9 @@ extension NewIrregularEventViewController: UITableViewDataSource {
         cell.textLabel?.text = NSLocalizedString("category.title", comment: "")
         cell.detailTextLabel?.text = selectedCategory?.title ?? ""
         cell.detailTextLabel?.font = UIFont.systemFont(ofSize: 17)
-        cell.detailTextLabel?.textColor = .customGray
+        cell.detailTextLabel?.textColor = .customBlack
         cell.accessoryType = .disclosureIndicator
-        cell.backgroundColor = .customSystemGray
+        cell.backgroundColor = .customBackground
         
         return cell
     }
@@ -403,8 +404,8 @@ extension NewIrregularEventViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
         let cell = collectionView.cellForItem(at: indexPath) as? TrackerCollectionViewCell
-        cell?.titleLabel.backgroundColor = .white
-        cell?.colorView.layer.borderColor = UIColor.white.cgColor
+        cell?.titleLabel.backgroundColor = .customWhite
+        cell?.colorView.layer.borderColor = UIColor.customWhite.cgColor
         checkCreateButton()
     }
 }

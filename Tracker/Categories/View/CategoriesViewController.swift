@@ -40,6 +40,7 @@ final class CategoriesViewController: UIViewController {
         let button = UIButton()
         let buttonTitle = NSLocalizedString("addCategory.title", comment: "")
         button.setTitle(buttonTitle, for: .normal)
+        button.setTitleColor(.customWhite, for: .normal)
         button.backgroundColor = .customBlack
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         button.layer.cornerRadius = 16
@@ -48,7 +49,7 @@ final class CategoriesViewController: UIViewController {
     }()
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
-        tableView.backgroundColor = .white
+        tableView.backgroundColor = .customWhite
         tableView.layer.cornerRadius = 16
         return tableView
     }()
@@ -116,7 +117,7 @@ final class CategoriesViewController: UIViewController {
         tableView.register(NewTrackerTableViewCell.self, forCellReuseIdentifier: "CategoryTableViewCell")
     }
     private func setupUserInterface() {
-        view.backgroundColor = .white
+        view.backgroundColor = .customWhite
         
         view.addSubview(topLabel)
         setupLabelConstraints()
@@ -188,6 +189,7 @@ extension CategoriesViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryTableViewCell", for: indexPath) as? NewTrackerTableViewCell
+        cell?.backgroundColor = .customBackground
         cell?.image.image = UIImage(named: "DoneImage")
         cell?.image.isHidden = true
         cell?.category = viewModel.categories[indexPath.row]

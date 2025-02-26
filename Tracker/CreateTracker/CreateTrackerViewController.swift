@@ -21,6 +21,7 @@ final class CreateTrackerViewController: UIViewController {
         let buttonText = NSLocalizedString("habit", comment: "")
         button.setTitle(buttonText, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16)
+        button.setTitleColor(.customWhite, for: .normal)
         button.backgroundColor = .customBlack
         button.layer.cornerRadius = 16
         button.addTarget(self, action: #selector(habitButtonTapped), for: .touchUpInside)
@@ -31,6 +32,7 @@ final class CreateTrackerViewController: UIViewController {
         let buttonText = NSLocalizedString("irregularEvent", comment: "")
         button.setTitle(buttonText, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16)
+        button.setTitleColor(.customWhite, for: .normal)
         button.backgroundColor = .customBlack
         button.layer.cornerRadius = 16
         button.addTarget(self, action: #selector(irregularEventButtonTapped), for: .touchUpInside)
@@ -63,7 +65,7 @@ final class CreateTrackerViewController: UIViewController {
     }
     // MARK: - Private functions
     private func setupUserInterface() {
-        view.backgroundColor = .white
+        view.backgroundColor = .customWhite
         
         view.addSubview(label)
         setupLabelConstraints()

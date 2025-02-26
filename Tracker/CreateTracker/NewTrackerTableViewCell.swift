@@ -9,7 +9,6 @@ import UIKit
 final class NewTrackerTableViewCell: UITableViewCell {
     lazy var button: UIButton = {
         let button = UIButton(type: .system)
-        button.backgroundColor = .customSystemGray
         return button
     }()
     lazy var buttonText: UILabel = {

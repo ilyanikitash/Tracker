@@ -40,7 +40,7 @@ final class MainScreenCollectionViewCell: UICollectionViewCell {
     private lazy var daysLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 12, weight: .medium)
-        label.textColor = .black
+        label.textColor = .customBlack
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
