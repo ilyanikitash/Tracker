@@ -195,7 +195,7 @@ extension CategoriesViewController: UITableViewDataSource {
         cell?.category = viewModel.categories[indexPath.row]
         cell?.buttonText.text = viewModel.categories[indexPath.row].title
         cell?.button.addTarget(self, action: #selector(categoryDidTapped(_:)), for: .touchUpInside)
-        guard let cell else { return UITableViewCell()}
+        guard let cell else { return UITableViewCell() }
         return cell
     }
 }

@@ -8,7 +8,7 @@
 import UIKit
 import CoreData
 import YandexMobileMetrica
-//aba820ae-cc15-4240-bdae-f7899c2e1fd3
+
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
     

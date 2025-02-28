@@ -56,6 +56,14 @@ final class MainScreenCollectionViewCell: UICollectionViewCell {
         button.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
         return button
     }()
+    private lazy var pinnedImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.tintColor = .white
+        imageView.image = UIImage(named: "PinImage")
+        imageView.isHidden = true
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        return imageView
+    }()
     private lazy var plusImage: UIImage = {
         let pointSize = UIImage.SymbolConfiguration(pointSize: 11)
         let image = UIImage(systemName: "plus", withConfiguration: pointSize) ?? UIImage()
@@ -77,6 +85,7 @@ final class MainScreenCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(colorView)
         colorView.addSubview(emojiLabel)
         colorView.addSubview(titleLabel)
+        colorView.addSubview(pinnedImageView)
         contentView.addSubview(daysLabel)
         contentView.addSubview(addButton)
         
@@ -100,6 +109,11 @@ final class MainScreenCollectionViewCell: UICollectionViewCell {
             emojiLabel.leadingAnchor.constraint(equalTo: colorView.leadingAnchor, constant: 10),
             emojiLabel.widthAnchor.constraint(equalToConstant: 24),
             emojiLabel.heightAnchor.constraint(equalToConstant: 24),
+            
+            pinnedImageView.heightAnchor.constraint(equalToConstant: 24),
+            pinnedImageView.widthAnchor.constraint(equalToConstant: 24),
+            pinnedImageView.trailingAnchor.constraint(equalTo: colorView.trailingAnchor, constant: -4),
+            pinnedImageView.topAnchor.constraint(equalTo: colorView.topAnchor, constant: 12),
 
             titleLabel.centerXAnchor.constraint(equalTo: colorView.centerXAnchor),
             titleLabel.topAnchor.constraint(equalTo: emojiLabel.bottomAnchor, constant: 8),
@@ -116,11 +130,6 @@ final class MainScreenCollectionViewCell: UICollectionViewCell {
 
         ])
     }
-    
-//    private func pluralizeDays(_ count: Int) -> String {
-//        return String.localizedStringWithFormat(NSLocalizedString("numberOfDays", comment: ""), count)
-//    }
-    
     // MARK: - Configuration
     @objc private func addButtonTapped() {
         guard let trackerID = trackerID, let indexPath = indexPath else {

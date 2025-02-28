@@ -137,7 +137,8 @@ final class NewHabitViewController: UIViewController {
                                           color: color,
                                           emoji: emoji,
                                           schedule: selectedSchedule,
-                                          type: .habbit)
+                                          type: .habbit,
+                                          isPinned: false)
             newTrackerDelegate?.didTabCreateButton(categoryTitle: categoryName, trackerToAdd: newTracker)
             navigationController?.popViewController(animated: true)
         }

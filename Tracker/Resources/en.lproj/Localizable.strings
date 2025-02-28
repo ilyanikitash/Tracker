@@ -44,4 +44,12 @@
 "saturday" = "Saturday";
 "sunday" = "Sunday";
 "statistic" = "Statistic";
-
+"pin" = "Pin";
+"unpin" = "Unpin";
+"edit" = "Edit";
+"delete" = "Delete";
+"filters" = "Filters";
+"all_trackers" = "All trackers";
+"today_trackers" = "Today's trackers";
+"completed_trackers" = "Completed trackers";
+"not_completed_trackers" = "Not completed trackers";

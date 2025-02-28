@@ -127,7 +127,8 @@ final class NewIrregularEventViewController: UIViewController {
                                       color: color,
                                       emoji: emoji,
                                       schedule: [.monday, .tuesday, .wednesday, .thursday, .friday, .saturday, .sunday],
-                                      type: .event)
+                                      type: .event,
+                                      isPinned: false)
         newTrackerDelegate?.didTabCreateButton(categoryTitle: categoryName, trackerToAdd: newTracker)
         presentingViewController?.presentingViewController?.dismiss(animated: true, completion: nil)
     }

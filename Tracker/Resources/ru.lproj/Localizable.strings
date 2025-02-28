@@ -44,4 +44,12 @@
 "saturday" = "Суббота";
 "sunday" = "Воскресенье";
 "statistic" = "Статистика";
-
+"pin" = "Закрепить";
+"unpin" = "Открепить";
+"edit" = "Редактировать";
+"delete" = "Удалить";
+"filters" = "Фильтры";
+"all_trackers" = "Все трекеры";
+"today_trackers" = "Трекеры на сегодня";
+"completed_trackers" = "Завершенные";
+"not_completed_trackers" = "Не завершенные";

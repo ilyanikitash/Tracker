@@ -124,6 +124,37 @@ extension TrackerStore: TrackerStoreProtocol {
         }
     }
     
+    func updateTrackerPin(_ tracker: TrackerModel) {
+        guard let trackerToUpdate = getTrackerCoreData(by: tracker.id) else { return }
+        trackerToUpdate.isPinned = tracker.isPinned
+        
+        do {
+            try context.save()
+            print("Pin tracker updated")
+            try fetchedResultsController.performFetch()
+            print("Updated trackers: \(fetchedResultsController.fetchedObjects ?? [])")
+        } catch {
+            print("Error updating pin tracker: \(error.localizedDescription)")
+        }
+    }
+    
+    func deleteTracker(_ tracker: TrackerModel) {
+        guard let trackerToDelete = getTrackerCoreData(by: tracker.id) else {
+            return
+        }
+        
+        context.delete(trackerToDelete)
+        
+        do {
+            try context.save()
+            print("Tracker deleted")
+            try fetchedResultsController.performFetch()
+            print("Updated: \(fetchedResultsController.fetchedObjects ?? [])")
+        } catch {
+            print("Error updating context: \(error.localizedDescription)")
+        }
+    }
+    
     func getTrackerCoreData(by id: UUID) -> TrackerCoreData? {
         fetchedResultsController.fetchRequest.predicate = NSPredicate(
             format: "id == %@", id as CVarArg
