@@ -41,6 +41,7 @@ final class MainScreenViewController: UIViewController {
         flowLayout.minimumInteritemSpacing = 16
         flowLayout.scrollDirection = .vertical
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
+        collectionView.backgroundColor = .customWhite
         return collectionView
     }()
     private lazy var filterButton: UIButton = {
@@ -193,8 +194,49 @@ final class MainScreenViewController: UIViewController {
                     trackers: trackers
             )
         }
+        filteredCategories = sortCategories(filteredCategories)
         collectionView.reloadData()
         reloadPlaceholder(text)
+    }
+    private func sortCategories(_ categories: [TrackerCategoryModel]) -> [TrackerCategoryModel] {
+        var cleanCategories: [TrackerCategoryModel] = []
+        var pinnedTrackerList: [TrackerModel] = []
+        
+        categories.forEach { category in
+            var trackers: [TrackerModel] = []
+            var pinnedTrackers: [TrackerModel] = []
+            
+            category.trackers.forEach { trackerData in
+                let isPinned = trackerData.isPinned
+                isPinned
+                    ? pinnedTrackers.append(trackerData)
+                    : trackers.append(trackerData)
+            }
+            
+            if !pinnedTrackers.isEmpty {
+                pinnedTrackerList.append(contentsOf: pinnedTrackers)
+            }
+            
+            if !trackers.isEmpty {
+                cleanCategories
+                    .append(
+                        TrackerCategoryModel(
+                            title: category.title,
+                            trackers: trackers.sorted(by: {$0.name > $1.name})
+                        )
+                    )
+            }
+        }
+        
+        if !pinnedTrackerList.isEmpty {
+            let pinnedCategory = TrackerCategoryModel(
+                title: NSLocalizedString("pin_category", comment: ""),
+                trackers: pinnedTrackerList.sorted(by: {$0.name > $1.name})
+            )
+            cleanCategories.insert(pinnedCategory, at: 0)
+        }
+        
+        return cleanCategories
     }
     private func reloadPlaceholder(_ searchBarText: String) {
         let isEmpty = filteredCategories.isEmpty
@@ -323,7 +365,6 @@ extension MainScreenViewController: UICollectionViewDataSource {
 
         let tracker = filteredCategories[indexPath.section].trackers[indexPath.row]
         cell.delegate = self
-
         let isCompletedToday = isTrackerCompletedToday(id: tracker.id)
         let completedDays: Int
 
@@ -450,6 +491,7 @@ extension MainScreenViewController: UICollectionViewDelegateFlowLayout {
             return UIMenu(children: [
                 UIAction(title: pinText) { [weak self] _ in
                     guard let self else { return }
+                    
                     let trackerPinned = TrackerModel(
                         id: tracker.id,
                         name: tracker.name,
@@ -465,7 +507,35 @@ extension MainScreenViewController: UICollectionViewDelegateFlowLayout {
                 },
                 UIAction(title: NSLocalizedString("edit", comment: "")) { [weak self] _ in
                     guard let self else { return }
-                    print("2")
+                    let daysCount = self.completedTrackers.filter { $0.id == tracker.id }.count
+                    
+                    var realCategory: TrackerCategoryModel? = nil
+
+                    for category in categories {
+                        let filteredTrackers = category.trackers.filter { tracker.id == $0.id
+                        }
+                        
+                        if !filteredTrackers.isEmpty {
+                            realCategory = category
+                        }
+                    }
+                    
+                    if tracker.type == .habbit {
+                        let editTrackerVC = NewHabitViewController (
+                            trackerToEdit: tracker,
+                            category: realCategory,
+                            daysCount: daysCount
+                        )
+                        editTrackerVC.newTrackerDelegate = self
+                        self.present(UINavigationController(rootViewController: editTrackerVC), animated: true)
+                    } else {
+//                        let editTrackerVC = NewIrregularEventViewController (
+//                            trackerToEdit: tracker,
+//                            category: realCategory
+//                        )
+//                        editTrackerVC.trackerHabbitDelegate = self
+//                        self.present(UINavigationController(rootViewController: editTrackerVC), animated: true)
+                    }
                 },
                 UIAction(title: NSLocalizedString("delete", comment: "")) { [weak self] _ in
                     guard let self else { return }
@@ -528,6 +598,26 @@ extension MainScreenViewController: NewTrackerViewControllerDelegate {
     }
     
     func didTabCancelButton() {
+        dismiss(animated: true)
+    }
+    
+    func didTabSaveButton(categoryTitle: String, trackerToUpdate: TrackerModel) {
+        print("🛠 Метод didTapSaveButton вызван с categoryTitle: \(categoryTitle)")
+    
+        guard let categoryIndex = categories.firstIndex(where: { $0.title == categoryTitle }) else {
+            print("⚠️ Категория не найдена: \(categoryTitle)")
+            return
+        }
+        
+        let category = categories[categoryIndex]
+        
+        trackerStore.updateTracker(trackerToUpdate, from: category)
+        
+        getAllCategories()
+        getCompletedTrackers()
+        updateFilteredCategories(with: "")
+        
+        // Закрываем экран редактирования
         dismiss(animated: true)
     }
 }

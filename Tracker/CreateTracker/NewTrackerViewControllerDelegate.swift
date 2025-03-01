@@ -8,5 +8,6 @@ import Foundation
 
 protocol NewTrackerViewControllerDelegate: AnyObject {
     func didTabCreateButton(categoryTitle: String, trackerToAdd: TrackerModel)
+    func didTabSaveButton(categoryTitle: String, trackerToUpdate: TrackerModel)
     func didTabCancelButton()
 }

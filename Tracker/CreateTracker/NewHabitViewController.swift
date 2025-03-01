@@ -10,6 +10,7 @@ final class NewHabitViewController: UIViewController {
     // MARK: - lazy properties (UI Elements)
     private lazy var topLabel: UILabel = {
         let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
         let labelText = NSLocalizedString("newHabit", comment: "")
         label.text = labelText
         label.font = .systemFont(ofSize: 16)
@@ -19,6 +20,7 @@ final class NewHabitViewController: UIViewController {
         let textField = UITextField()
         textField.clearButtonMode = .whileEditing
         let textFieldPlaceholder = NSLocalizedString("enterTrackerName", comment: "")
+        textField.translatesAutoresizingMaskIntoConstraints = false
         textField.placeholder = textFieldPlaceholder
         textField.textColor = .customGray
         textField.addTarget(self, action: #selector(checkCreateButton), for: .editingChanged)
@@ -34,6 +36,7 @@ final class NewHabitViewController: UIViewController {
         let tableView = UITableView()
         tableView.backgroundColor = .customBackground
         tableView.layer.cornerRadius = 16
+        tableView.translatesAutoresizingMaskIntoConstraints = false
         return tableView
     }()
     private lazy var cancelButton: UIButton = {
@@ -47,6 +50,7 @@ final class NewHabitViewController: UIViewController {
         button.layer.borderWidth = 1.0
         button.layer.borderColor = UIColor.customRed.cgColor
         button.addTarget(self, action: #selector(cancelButtonTapped), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     private lazy var createButton: UIButton = {
@@ -57,12 +61,14 @@ final class NewHabitViewController: UIViewController {
         button.backgroundColor = .customGray
         button.layer.cornerRadius = 16
         button.addTarget(self, action: #selector(didTapCreateButton), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     private lazy var emojiLabel: UILabel = {
         let emojiLabel = UILabel()
         emojiLabel.text = "Emoji"
         emojiLabel.font = UIFont.systemFont(ofSize: 19, weight: .bold)
+        emojiLabel.translatesAutoresizingMaskIntoConstraints = false
         return emojiLabel
         
     }()
@@ -71,6 +77,7 @@ final class NewHabitViewController: UIViewController {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.register(TrackerCollectionViewCell.self, forCellWithReuseIdentifier: "EmojiCell")
         collectionView.isScrollEnabled = false
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
         return collectionView
     }()
     private lazy var colorLabel: UILabel = {
@@ -78,6 +85,7 @@ final class NewHabitViewController: UIViewController {
         let labelText = NSLocalizedString("color", comment: "")
         emojiLabel.text = labelText
         emojiLabel.font = UIFont.systemFont(ofSize: 19, weight: .bold)
+        emojiLabel.translatesAutoresizingMaskIntoConstraints = false
         return emojiLabel
     }()
     private lazy var colorCollectionView: UICollectionView = {
@@ -85,15 +93,26 @@ final class NewHabitViewController: UIViewController {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.register(TrackerCollectionViewCell.self, forCellWithReuseIdentifier: "ColorCell")
         collectionView.isScrollEnabled = false
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
         return collectionView
     }()
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
         return scrollView
     }()
     private lazy var scrollContentView: UIView = {
         let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
         return view
+    }()
+    private lazy var daysCountLabel: UILabel = {
+        let label = UILabel()
+        label.textAlignment = .center
+        label.font = .systemFont(ofSize: 32, weight: .bold)
+        label.isHidden = true
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
     }()
     // MARK: - properties
     private let emojis = [
@@ -112,6 +131,10 @@ final class NewHabitViewController: UIViewController {
     weak var newTrackerDelegate: NewTrackerViewControllerDelegate?
     weak var scheduleDelegate: SelectScheduleItemDelegate?
     
+    private var isEditMode = false
+    private var trackerToEdit: TrackerModel?
+    private var daysCount: Int = 0
+    
     var trackerCreated: ((TrackerModel) -> Void)?
     // MARK: - viewDidLoad
     override func viewDidLoad() {
@@ -119,30 +142,72 @@ final class NewHabitViewController: UIViewController {
         setupUserInterface()
         setupTableView()
         setupCollections()
+        
+        if isEditMode {
+            setDataToEdit()
+            createButton.isEnabled = true
+        }
     }
     // MARK: - Override functions
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true)
     }
+    // MARK: - Inits
+    init() {
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    init(trackerToEdit: TrackerModel, category: TrackerCategoryModel?, daysCount: Int) {
+        self.trackerToEdit = trackerToEdit
+        self.selectedCategory = category
+        self.daysCount = daysCount
+        self.isEditMode = true
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     // MARK: - Selectors
     @objc
     private func didTapCreateButton() {
-        guard let text = habitsNameTextField.text else { return }
-        guard let color = selectedColor else { return }
-        guard let emoji = selectedEmoji else { return }
-        guard let categoryName = selectedCategory?.title else { return }
-        if !selectedSchedule.isEmpty {
-            let newTracker = TrackerModel(id: UUID(),
-                                          name: text,
-                                          color: color,
-                                          emoji: emoji,
-                                          schedule: selectedSchedule,
-                                          type: .habbit,
-                                          isPinned: false)
-            newTrackerDelegate?.didTabCreateButton(categoryTitle: categoryName, trackerToAdd: newTracker)
-            navigationController?.popViewController(animated: true)
+//        guard let text = habitsNameTextField.text else { return }
+//        guard let color = selectedColor else { return }
+//        guard let emoji = selectedEmoji else { return }
+//        guard let categoryName = selectedCategory?.title else { return }
+//        if !selectedSchedule.isEmpty {
+//            let newTracker = TrackerModel(id: UUID(),
+//                                          name: text,
+//                                          color: color,
+//                                          emoji: emoji,
+//                                          schedule: selectedSchedule,
+//                                          type: .habbit,
+//                                          isPinned: false)
+        guard
+            let category = selectedCategory?.title,
+            let text = habitsNameTextField.text, !text.isEmpty,
+            let color = selectedColor,
+            let emoji = selectedEmoji,
+            !selectedSchedule.isEmpty
+        else { return }
+
+        let tracker = TrackerModel(
+            id: trackerToEdit?.id ?? UUID(),
+            name: text,
+            color: color,
+            emoji: emoji,
+            schedule: selectedSchedule,
+            type: .habbit,
+            isPinned: trackerToEdit?.isPinned ?? false
+        )
+        if isEditMode {
+            newTrackerDelegate?.didTabSaveButton(categoryTitle: category, trackerToUpdate: tracker)
+        } else {
+            newTrackerDelegate?.didTabCreateButton(categoryTitle: category, trackerToAdd: tracker)
         }
-    }
+        navigationController?.popViewController(animated: true)
+        
+}
     @objc
     private func cancelButtonTapped() {
         dismiss(animated: true, completion: nil)
@@ -161,6 +226,47 @@ final class NewHabitViewController: UIViewController {
             createButton.isEnabled = false
             createButton.backgroundColor = .customGray
         }
+    }
+    // MARK: - Edit Mode
+    private func setDataToEdit() {
+        guard let tracker = trackerToEdit else { return }
+
+        habitsNameTextField.text = tracker.name
+        selectedEmoji = tracker.emoji
+        selectedColor = tracker.color
+        selectedSchedule = tracker.schedule
+        
+        setupDaysCount(daysCount)
+        print("\(daysCount)")
+
+        if let index = emojis.firstIndex(of: tracker.emoji) {
+            let indexPath = IndexPath(row: index, section: 0)
+            emojiCollectionView.selectItem(at: indexPath, animated: false, scrollPosition: .centeredVertically)
+        }
+
+        if let index = colors.firstIndex(of: tracker.color) {
+            let indexPath = IndexPath(row: index, section: 0)
+            colorCollectionView.selectItem(at: indexPath, animated: false, scrollPosition: .centeredVertically)
+        }
+        
+        emojiCollectionView.reloadData()
+        colorCollectionView.reloadData()
+        tableView.reloadData()
+        createButton.setTitle("Save", for: .normal)
+        topLabel.text = "Habit editing"
+        
+        // Обновляем состояние кнопки
+        createButton.isEnabled = true
+        createButton.backgroundColor = .customBlack
+    }
+    func setupDaysCount(_ dayCount: Int) {
+        daysCountLabel.isHidden = false
+//        let dayString = String.localizedStringWithFormat(
+//            NumberOfDays.numberOfDays ,
+//            dayCount
+//        )
+        
+        daysCountLabel.text = "\(dayCount) days"
     }
     // MARK: - Private functions
     private func setupCollections() {
@@ -196,11 +302,22 @@ final class NewHabitViewController: UIViewController {
     private func setupUserInterface() {
         view.backgroundColor = .customWhite
         
-        view.addSubview(topLabel)
-        setupTopLabelConstraints()
-        
-        view.addSubview(habitsNameView)
-        setupHabitsNameViewConstraints()
+        if isEditMode {
+            view.addSubview(topLabel)
+            setupTopLabelConstraints()
+            
+            view.addSubview(daysCountLabel)
+            setupDaysCountConstraint()
+            
+            view.addSubview(habitsNameView)
+            setupHabitsNameViewConstraintsEditMode()
+        } else {
+            view.addSubview(topLabel)
+            setupTopLabelConstraints()
+            
+            view.addSubview(habitsNameView)
+            setupHabitsNameViewConstraints()
+        }
         
         habitsNameView.addSubview(habitsNameTextField)
         setupHabitsNameTextFieldConstraints()
@@ -242,6 +359,14 @@ final class NewHabitViewController: UIViewController {
         return shortNames.joined(separator: ", ")
     }
     // MARK: - Contraints
+    private func setupDaysCountConstraint() {
+        NSLayoutConstraint.activate([
+            daysCountLabel.topAnchor.constraint(equalTo: topLabel.bottomAnchor, constant: 40),
+            daysCountLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            daysCountLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            daysCountLabel.heightAnchor.constraint(equalToConstant: 38)
+        ])
+    }
     private func setupScrollViewConstraints() {
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -292,8 +417,8 @@ final class NewHabitViewController: UIViewController {
     private func setupTopLabelConstraints() {
         topLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            topLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            topLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 16)
+          topLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+          topLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 16)
         ])
     }
     private func setupHabitsNameTextFieldConstraints() {
@@ -304,6 +429,15 @@ final class NewHabitViewController: UIViewController {
             habitsNameTextField.trailingAnchor.constraint(equalTo: habitsNameView.trailingAnchor, constant: -16),
             habitsNameTextField.topAnchor.constraint(equalTo: habitsNameView.topAnchor),
             habitsNameTextField.bottomAnchor.constraint(equalTo: habitsNameView.bottomAnchor)
+        ])
+    }
+    private func setupHabitsNameViewConstraintsEditMode() {
+        habitsNameView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            habitsNameView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            habitsNameView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            habitsNameView.topAnchor.constraint(equalTo: daysCountLabel.bottomAnchor, constant: 40),
+            habitsNameView.heightAnchor.constraint(equalToConstant: 75)
         ])
     }
     private func setupHabitsNameViewConstraints() {
@@ -325,15 +459,15 @@ final class NewHabitViewController: UIViewController {
             emojiLabel.leadingAnchor.constraint(equalTo: scrollContentView.leadingAnchor, constant: 28),
             emojiLabel.heightAnchor.constraint(equalToConstant: 52),
             emojiLabel.widthAnchor.constraint(equalToConstant: 52),
-            
+
             emojiCollectionView.topAnchor.constraint(equalTo: emojiLabel.bottomAnchor, constant: 8),
             emojiCollectionView.leadingAnchor.constraint(equalTo: scrollContentView.leadingAnchor, constant: 16),
             emojiCollectionView.trailingAnchor.constraint(equalTo: scrollContentView.trailingAnchor, constant: -16),
-            
+
             colorLabel.topAnchor.constraint(equalTo: emojiCollectionView.bottomAnchor, constant: 16),
             colorLabel.leadingAnchor.constraint(equalTo: scrollContentView.leadingAnchor, constant: 28),
             colorLabel.heightAnchor.constraint(equalToConstant: 18),
-            
+
             colorCollectionView.topAnchor.constraint(equalTo: colorLabel.bottomAnchor, constant: 8),
             colorCollectionView.leadingAnchor.constraint(equalTo: scrollContentView.leadingAnchor, constant: 16),
             colorCollectionView.trailingAnchor.constraint(equalTo: scrollContentView.trailingAnchor, constant: -16),

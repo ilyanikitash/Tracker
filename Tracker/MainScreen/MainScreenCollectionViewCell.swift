@@ -159,6 +159,7 @@ final class MainScreenCollectionViewCell: UICollectionViewCell {
         titleLabel.text = tracker.name
         colorView.backgroundColor = tracker.color
         addButton.backgroundColor = tracker.color
+        pinnedImageView.isHidden = !tracker.isPinned
         
         if isCompletedToday {
             addButton.backgroundColor = tracker.color.withAlphaComponent(0.3)

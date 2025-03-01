@@ -155,6 +155,33 @@ extension TrackerStore: TrackerStoreProtocol {
         }
     }
     
+    func updateTracker(_ tracker: TrackerModel, from category: TrackerCategoryModel) {
+        guard
+            let categoryCoreData = trackerCategoryStore.getCategoryByTitle(category.title),
+            let trackerToUpdate = getTrackerCoreData(by: tracker.id)
+        else {
+            return
+        }
+        
+        trackerToUpdate.id = tracker.id
+        trackerToUpdate.name = tracker.name
+        trackerToUpdate.color = uiColorMarshalling.hexString(from: tracker.color)
+        trackerToUpdate.emoji = tracker.emoji
+        trackerToUpdate.schedule = tracker.schedule as NSObject
+        trackerToUpdate.type = trackerTypeValueTransformer.transformedValue(tracker.type) as? String
+        trackerToUpdate.category = categoryCoreData
+        trackerToUpdate.isPinned = tracker.isPinned
+        
+        do {
+            try context.save()
+            print("Tracker updated")
+            try fetchedResultsController.performFetch()
+            print("Updated trackers: \(fetchedResultsController.fetchedObjects ?? [])")
+        } catch {
+            print("Error saving tracker: \(error.localizedDescription)")
+        }
+    }
+    
     func getTrackerCoreData(by id: UUID) -> TrackerCoreData? {
         fetchedResultsController.fetchRequest.predicate = NSPredicate(
             format: "id == %@", id as CVarArg
