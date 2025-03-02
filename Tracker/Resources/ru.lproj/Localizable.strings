@@ -54,3 +54,7 @@
 "completed_trackers" = "Завершенные";
 "not_completed_trackers" = "Не завершенные";
 "pin_category" = "Закрепленные";
+"best_period" = "Лучший период";
+"ideal_days" = "Идеальные дни";
+"trackers_completed" = "Трекеров завершено";
+"average_value" = "Среднее значение";

@@ -171,18 +171,6 @@ final class NewHabitViewController: UIViewController {
     // MARK: - Selectors
     @objc
     private func didTapCreateButton() {
-//        guard let text = habitsNameTextField.text else { return }
-//        guard let color = selectedColor else { return }
-//        guard let emoji = selectedEmoji else { return }
-//        guard let categoryName = selectedCategory?.title else { return }
-//        if !selectedSchedule.isEmpty {
-//            let newTracker = TrackerModel(id: UUID(),
-//                                          name: text,
-//                                          color: color,
-//                                          emoji: emoji,
-//                                          schedule: selectedSchedule,
-//                                          type: .habbit,
-//                                          isPinned: false)
         guard
             let category = selectedCategory?.title,
             let text = habitsNameTextField.text, !text.isEmpty,
