@@ -249,12 +249,11 @@ final class NewHabitViewController: UIViewController {
     }
     func setupDaysCount(_ dayCount: Int) {
         daysCountLabel.isHidden = false
-//        let dayString = String.localizedStringWithFormat(
-//            NumberOfDays.numberOfDays ,
-//            dayCount
-//        )
-        
-        daysCountLabel.text = "\(dayCount) days"
+        let wordDay = String.localizedStringWithFormat(
+            NSLocalizedString("numberOfDays", comment: ""),
+            dayCount
+        )
+        daysCountLabel.text = wordDay
     }
     // MARK: - Private functions
     private func setupCollections() {

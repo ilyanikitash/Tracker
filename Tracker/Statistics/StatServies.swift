@@ -72,8 +72,8 @@ private extension StatService {
         guard totalDays > 0 else {
             return 0.0
         }
-        
-        return Double(totalCompletedTrackers) / Double(totalDays)
+        let number = Double(totalCompletedTrackers) / Double(totalDays)
+        return round(number * 100) / 100
     }
     
     // MARK: - getBestPeriod

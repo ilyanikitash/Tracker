@@ -92,6 +92,14 @@ final class NewIrregularEventViewController: UIViewController {
         let view = UIView()
         return view
     }()
+    private lazy var daysCountLabel: UILabel = {
+        let label = UILabel()
+        label.textAlignment = .center
+        label.font = .systemFont(ofSize: 32, weight: .bold)
+        label.isHidden = true
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
     // MARK: - properties
     private let emojis = [
         "😊", "😻", "🌺", "🐶", "❤️", "😱", "😇", "😡", "🥶", "🤔", "🙌", "🍔", "🥦", "🏓", "🥇", "🎸", "🏝", "😪"
@@ -101,14 +109,34 @@ final class NewIrregularEventViewController: UIViewController {
     private var selectedColor: UIColor?
     private var selectedCategory: TrackerCategoryModel?
     weak var newTrackerDelegate: NewTrackerViewControllerDelegate?
+    private var isEditMode = false
+    private var trackerToEdit: TrackerModel?
+    private var daysCount: Int = 0
     
     var trackerCreated: ((TrackerModel) -> Void)?
+    // MARK: - Inits
+    init() {
+        super.init(nibName: nil, bundle: nil)
+    }
+    init(trackerToEdit: TrackerModel, category: TrackerCategoryModel?) {
+        self.trackerToEdit = trackerToEdit
+        self.selectedCategory = category
+        self.isEditMode = true
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     // MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUserInterface()
         setupTableView()
         setupCollections()
+        if isEditMode {
+            setDataToEdit()
+        }
     }
     // MARK: - Override functions
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -117,19 +145,28 @@ final class NewIrregularEventViewController: UIViewController {
     // MARK: - Selectors
     @objc
     private func didTapCreateButton() {
-        guard let text = textField.text else { return }
-        guard let color = selectedColor else { return }
-        guard let emoji = selectedEmoji else { return }
-        guard let categoryName = selectedCategory?.title else { return }
-        
-        let newTracker = TrackerModel(id: UUID(),
-                                      name: text,
-                                      color: color,
-                                      emoji: emoji,
-                                      schedule: [.monday, .tuesday, .wednesday, .thursday, .friday, .saturday, .sunday],
-                                      type: .event,
-                                      isPinned: false)
-        newTrackerDelegate?.didTabCreateButton(categoryTitle: categoryName, trackerToAdd: newTracker)
+        guard
+            let category = selectedCategory?.title,
+            let title = textField.text, !title.isEmpty,
+            let color = selectedColor,
+            let emoji = selectedEmoji
+        else { return }
+
+        let tracker = TrackerModel(
+            id: trackerToEdit?.id ?? UUID(),
+            name: title,
+            color: color,
+            emoji: emoji,
+            schedule: [.monday, .tuesday, .wednesday, .thursday, .friday, .saturday, .sunday],
+            type: .event ,
+            isPinned: trackerToEdit?.isPinned ?? false
+        )
+
+        if isEditMode {
+            newTrackerDelegate?.didTabSaveButton(categoryTitle: category, trackerToUpdate: tracker)
+        } else {
+            newTrackerDelegate?.didTabCreateButton(categoryTitle: category, trackerToAdd: tracker)
+        }
         presentingViewController?.presentingViewController?.dismiss(animated: true, completion: nil)
     }
     @objc
@@ -151,7 +188,39 @@ final class NewIrregularEventViewController: UIViewController {
             createButton.backgroundColor = .customGray
         }
     }
+    func setupDaysCount(_ dayCount: Int) {
+        daysCountLabel.isHidden = false
+        let wordDay = String.localizedStringWithFormat(
+            NSLocalizedString("numberOfDays", comment: ""),
+            dayCount
+        )
+        daysCountLabel.text = wordDay
+    }
     // MARK: - Private functions
+    private func setDataToEdit() {
+        guard let tracker = trackerToEdit else { return }
+
+        textField.text = tracker.name
+        selectedEmoji = tracker.emoji
+        selectedColor = tracker.color
+        
+        setupDaysCount(daysCount)
+
+        if let index = emojis.firstIndex(of: tracker.emoji) {
+            let indexPath = IndexPath(row: index, section: 0)
+            emojiCollectionView.selectItem(at: indexPath, animated: false, scrollPosition: .centeredVertically)
+        }
+
+        if let index = colors.firstIndex(of: tracker.color) {
+            let indexPath = IndexPath(row: index, section: 0)
+            colorCollectionView.selectItem(at: indexPath, animated: false, scrollPosition: .centeredVertically)
+        }
+
+        tableView.reloadData()
+        createButton.setTitle(NSLocalizedString("save", comment: ""), for: .normal)
+        createButton.backgroundColor = .customBlack
+        topTitleLabel.text = NSLocalizedString("irregular_event_editing", comment: "")
+    }
     private func setupTableView() {
         tableView.isScrollEnabled = false
         tableView.dataSource = self
@@ -185,11 +254,22 @@ final class NewIrregularEventViewController: UIViewController {
     private func setupUserInterface() {
         view.backgroundColor = .customWhite
         
-        view.addSubview(topTitleLabel)
-        setupTopTitleLabelConstraints()
-        
-        view.addSubview(textFieldView)
-        setupTextFieldViewConstraints()
+        if isEditMode {
+            view.addSubview(topTitleLabel)
+            setupTopTitleLabelConstraints()
+            
+            view.addSubview(daysCountLabel)
+            setupDaysCountConstraint()
+            
+            view.addSubview(textFieldView)
+            setupTextFieldViewConstraintsEditMode()
+        } else {
+            view.addSubview(topTitleLabel)
+            setupTopTitleLabelConstraints()
+            
+            view.addSubview(textFieldView)
+            setupTextFieldViewConstraints()
+        }
         
         textFieldView.addSubview(textField)
         setupTextFieldConstraints()
@@ -214,6 +294,14 @@ final class NewIrregularEventViewController: UIViewController {
         setupScrollElementsConstrints()
     }
     // MARK: - Contraints
+    private func setupDaysCountConstraint() {
+        NSLayoutConstraint.activate([
+            daysCountLabel.topAnchor.constraint(equalTo: topTitleLabel.bottomAnchor, constant: 40),
+            daysCountLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            daysCountLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            daysCountLabel.heightAnchor.constraint(equalToConstant: 38)
+        ])
+    }
     private func setupScrollViewConstraints() {
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -282,6 +370,16 @@ final class NewIrregularEventViewController: UIViewController {
         NSLayoutConstraint.activate([
             topTitleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 16),
             topTitleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+        ])
+    }
+    private func setupTextFieldViewConstraintsEditMode() { // MARK: djsnfjnsd
+        textFieldView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            textFieldView.topAnchor.constraint(equalTo: daysCountLabel.bottomAnchor, constant: 40),
+            textFieldView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            textFieldView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            textFieldView.heightAnchor.constraint(equalToConstant: 75),
+            textFieldView.widthAnchor.constraint(equalToConstant: 343)
         ])
     }
     private func setupTextFieldViewConstraints() {

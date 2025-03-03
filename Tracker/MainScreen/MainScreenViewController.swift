@@ -5,7 +5,6 @@
 //  Created by Ilya Nikitash on 30/10/24.
 //
 import UIKit
-import YandexMobileMetrica
 
 final class MainScreenViewController: UIViewController {
     // MARK: - lazy properties (UI Elements)
@@ -70,9 +69,14 @@ final class MainScreenViewController: UIViewController {
     private var trackerRecordStore = TrackerRecordStore()
     private let filtersActiveState: [FilterCases?] = [.all, .completed, .notCompleted]
     private let userAppSettingsStorage = UserAppSettingStorage.shared
+    private let analyticService: AnalyticServiceProtocol = AnalyticService()
     var currentDate: Date = Date()
     weak var newTrackerDelegate: NewTrackerViewControllerDelegate?
-    // MARK: - viewDidLoad
+    // MARK: - Lifecycle
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        analyticService.trackOpenScreen(screen: .main)
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         trackerStore.delegate = self
@@ -88,12 +92,13 @@ final class MainScreenViewController: UIViewController {
         updateUI()
         setupCollectionView()
     }
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        analyticService.trackCloseScreen(screen: .main)
+    }
     // MARK: - Selectors
     @objc private func plusButtonTapped() {
-        YMMYandexMetrica.reportEvent("add_tracker", onFailure: { (error) in
-            print("DID FAIL TO REPORT EVENT: %@", "add_tracker")
-            print("REPORT ERROR: %@", error.localizedDescription)
-        })
+        analyticService.trackClick(screen: .main, item: .tapAddTrack)
         let createTrackerVC  = CreateTrackerViewController()
         createTrackerVC.mainScreenViewController = self
         createTrackerVC.modalPresentationStyle = .popover
@@ -101,16 +106,13 @@ final class MainScreenViewController: UIViewController {
     }
     
     @objc private func datePickerValueChanged() {
-        YMMYandexMetrica.reportEvent("date_picker_value_change", onFailure: { (error) in
-            print("DID FAIL TO REPORT EVENT: %@", "date_picker_value_change")
-            print("REPORT ERROR: %@", error.localizedDescription)
-        })
         currentDate = datePicker.date
         filter = .all
         updateFilteredCategories(with: "")
         filterButton.isHidden = filteredCategories.isEmpty
     }
     @objc private func didTapFilterButton() {
+        analyticService.trackClick(screen: .main, item: .tapFilterButton)
         let filtersVC = FilterViewController(
             selectedFilter: filter,
             delegate: self
@@ -507,6 +509,7 @@ extension MainScreenViewController: UICollectionViewDelegateFlowLayout {
                 },
                 UIAction(title: NSLocalizedString("edit", comment: "")) { [weak self] _ in
                     guard let self else { return }
+                    self.analyticService.trackClick(screen: .main, item: .editFromContextMenu)
                     let daysCount = self.completedTrackers.filter { $0.id == tracker.id }.count
                     
                     var realCategory: TrackerCategoryModel? = nil
@@ -529,16 +532,17 @@ extension MainScreenViewController: UICollectionViewDelegateFlowLayout {
                         editTrackerVC.newTrackerDelegate = self
                         self.present(UINavigationController(rootViewController: editTrackerVC), animated: true)
                     } else {
-//                        let editTrackerVC = NewIrregularEventViewController (
-//                            trackerToEdit: tracker,
-//                            category: realCategory
-//                        )
-//                        editTrackerVC.trackerHabbitDelegate = self
-//                        self.present(UINavigationController(rootViewController: editTrackerVC), animated: true)
+                        let editTrackerVC = NewIrregularEventViewController (
+                            trackerToEdit: tracker,
+                            category: realCategory
+                        )
+                        editTrackerVC.newTrackerDelegate = self
+                        self.present(UINavigationController(rootViewController: editTrackerVC), animated: true)
                     }
                 },
-                UIAction(title: NSLocalizedString("delete", comment: "")) { [weak self] _ in
+                UIAction(title: NSLocalizedString("delete", comment: ""), attributes: .destructive) { [weak self] _ in
                     guard let self else { return }
+                    self.analyticService.trackClick(screen: .main, item: .deleteFromContextMenu)
                     self.deleteTracker(tracker)
                 },
             ])
@@ -546,8 +550,12 @@ extension MainScreenViewController: UICollectionViewDelegateFlowLayout {
     }
     
     private func deleteTracker(_ tracker: TrackerModel) {
-        let alertController = UIAlertController(title: "Вы уверены?", message: "Удалить трекер?", preferredStyle: .actionSheet)
-        let deleteAction = UIAlertAction(title: "Delete", style: .default) { [weak self] _ in
+        let alertController = UIAlertController(
+            title: NSLocalizedString("are_you_sure", comment: ""),
+            message: NSLocalizedString("delete_tracker", comment: ""),
+            preferredStyle: .actionSheet
+        )
+        let deleteAction = UIAlertAction(title: "Delete", style: .destructive) { [weak self] _ in
             guard let self else { return }
             self.trackerStore.deleteTracker(tracker)
             self.getAllCategories()
@@ -602,10 +610,8 @@ extension MainScreenViewController: NewTrackerViewControllerDelegate {
     }
     
     func didTabSaveButton(categoryTitle: String, trackerToUpdate: TrackerModel) {
-        print("🛠 Метод didTapSaveButton вызван с categoryTitle: \(categoryTitle)")
     
         guard let categoryIndex = categories.firstIndex(where: { $0.title == categoryTitle }) else {
-            print("⚠️ Категория не найдена: \(categoryTitle)")
             return
         }
         
@@ -616,8 +622,6 @@ extension MainScreenViewController: NewTrackerViewControllerDelegate {
         getAllCategories()
         getCompletedTrackers()
         updateFilteredCategories(with: "")
-        
-        // Закрываем экран редактирования
         dismiss(animated: true)
     }
 }
@@ -626,11 +630,6 @@ extension MainScreenViewController: TrackerStoreDelegate {
     func didUpdate(_ update: TrackerStoreUpdate) {
         collectionView.performBatchUpdates {
             collectionView.reloadData()
-//            let insertedIndexPaths = update.insertedIndexes.map { IndexPath(item: $0, section: 0) }
-//            let deletedIndexPaths = update.deletedIndexes.map { IndexPath(item: $0, section: 0) }
-//            
-//            collectionView.insertItems(at: insertedIndexPaths)
-//            collectionView.deleteItems(at: deletedIndexPaths)
         } completion: { _ in
             self.collectionView.reloadData()
         }

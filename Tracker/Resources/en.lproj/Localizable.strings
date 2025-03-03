@@ -58,3 +58,7 @@
 "ideal_days" = "Ideal days";
 "trackers_completed" = "Trackers completed";
 "average_value" = "Average value";
+"save" = "Save";
+"irregular_event_editing" = "Irregular event editing";
+"are_you_sure" = "Are you sure?";
+"delete_tracker" = "Delete tracker?";

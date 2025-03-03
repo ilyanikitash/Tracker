@@ -59,6 +59,7 @@ final class StatisticsViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .customWhite
         setupConstraints()
         setupCollectionView()
     }
@@ -71,9 +72,9 @@ final class StatisticsViewController: UIViewController {
         statisticData = statisticService.getStatistic()
         statisticCollectionView.reloadData()
         if statisticData.isEmpty {
-            showPlaceholder(statisticData.isEmpty)
-        } else {
             showPlaceholder(!statisticData.isEmpty)
+        } else {
+            showPlaceholder(statisticData.isEmpty)
         }
     }
     private func showPlaceholder(_ isShow: Bool) {

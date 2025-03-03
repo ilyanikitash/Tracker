@@ -75,7 +75,7 @@ final class MainScreenCollectionViewCell: UICollectionViewCell {
     var trackerID: UUID?
     private var indexPath: IndexPath?
     private var isCompletedToday: Bool = false
-    
+    private let analyticService: AnalyticServiceProtocol = AnalyticService()
     static let identifier = "TrackerCell"
     
     // MARK: - Init
@@ -132,6 +132,7 @@ final class MainScreenCollectionViewCell: UICollectionViewCell {
     }
     // MARK: - Configuration
     @objc private func addButtonTapped() {
+        analyticService.trackClick(screen: .main, item: .tapTracker)
         guard let trackerID = trackerID, let indexPath = indexPath else {
             assertionFailure("no trackerID")
             return
