@@ -38,7 +38,7 @@ final class StatisticsViewController: UIViewController {
     }()
     private lazy var stubLabel: UILabel = {
         let label = UILabel()
-        label.text = NSLocalizedString("whatTrack", comment: "")
+        label.text = NSLocalizedString("no_analyze", comment: "")
         label.font = .systemFont(ofSize: 12, weight: .medium)
         label.textColor = .customBlack
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -71,11 +71,7 @@ final class StatisticsViewController: UIViewController {
     private func getStatistic() {
         statisticData = statisticService.getStatistic()
         statisticCollectionView.reloadData()
-        if statisticData.isEmpty {
-            showPlaceholder(!statisticData.isEmpty)
-        } else {
-            showPlaceholder(statisticData.isEmpty)
-        }
+        showPlaceholder(statisticData.isEmpty)
     }
     private func showPlaceholder(_ isShow: Bool) {
         stubLabel.isHidden = !isShow

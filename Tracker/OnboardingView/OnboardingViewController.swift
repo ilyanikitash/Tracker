@@ -47,7 +47,7 @@ final class OnboardingViewController: UIPageViewController {
     private lazy var textLabel: UILabel = {
         let label = UILabel()
         label.text = pagesText[0]
-        label.textColor = .customBlack
+        label.textColor = .white
         label.font = .systemFont(ofSize: 32, weight: .bold)
         label.numberOfLines = 0
         label.textAlignment = .center
