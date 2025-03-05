@@ -19,7 +19,7 @@ import Foundation
     override func transformedValue(_ value: Any?) -> Any? {
         guard let type = value as? TrackerType else { return nil }
         switch type {
-        case .habbit:
+        case .habit:
             return "habbit"
         case .event:
             return "event"
@@ -30,7 +30,7 @@ import Foundation
         guard let typeString = value as? String else { return nil }
         switch typeString {
         case "habbit":
-            return TrackerType.habbit
+            return TrackerType.habit
         case "event":
             return TrackerType.event
         default:

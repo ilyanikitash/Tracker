@@ -49,6 +49,7 @@ final class MainScreenViewController: UIViewController {
         button.titleLabel?.font = UIFont.systemFont(ofSize: 17)
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 16
+        button.isHidden = true
         button.backgroundColor = .customBlue
         button.translatesAutoresizingMaskIntoConstraints = false
         button.addTarget(self, action: #selector(didTapFilterButton), for: .touchUpInside)
@@ -107,9 +108,7 @@ final class MainScreenViewController: UIViewController {
     
     @objc private func datePickerValueChanged() {
         currentDate = datePicker.date
-        filter = .all
         updateFilteredCategories(with: "")
-        filterButton.isHidden = filteredCategories.isEmpty
     }
     @objc private func didTapFilterButton() {
         analyticService.trackClick(screen: .main, item: .tapFilterButton)
@@ -143,18 +142,18 @@ final class MainScreenViewController: UIViewController {
     private func updateFilteredCategories(with text: String) {
         switch filter {
         case .all, .none, .today:
-            reloadFiltredCategories(with: text) { id in
+            reloadFilteredCategories(with: text) { id in
                 true
             }
         case .completed:
-            reloadFiltredCategories(with: text) { id in
+            reloadFilteredCategories(with: text) { id in
                 completedTrackers
                     .contains {
                         $0.id == id && $0.date == currentDate
                     }
             }
         case .notCompleted:
-            reloadFiltredCategories(with: text) { id in
+            reloadFilteredCategories(with: text) { id in
                 !completedTrackers
                     .contains {
                         $0.id == id && $0.date == currentDate
@@ -165,7 +164,7 @@ final class MainScreenViewController: UIViewController {
         collectionView.reloadData()
     }
     
-    private func reloadFiltredCategories(with text: String, filterCheck: ((UUID) -> Bool)) {
+    private func reloadFilteredCategories(with text: String, filterCheck: ((UUID) -> Bool)) {
         let calendar = Calendar.current
         var filterWeekday = calendar.component(.weekday, from: currentDate) - 1
         if filterWeekday == 0 {
@@ -183,6 +182,11 @@ final class MainScreenViewController: UIViewController {
                 }
                 
                 let filterCondition = filterCheck(tracker.id)
+                if textCondition && dateCondition {
+                    filterButton.isHidden = false
+                } else {
+                    filterButton.isHidden = true
+                }
                 
                 return textCondition && dateCondition && filterCondition
             }
@@ -405,7 +409,7 @@ extension MainScreenViewController: TrackerCellDelegate {
         
         let record: TrackerRecordModel? = {
             switch tracker.type {
-            case .habbit:
+            case .habit:
                 return trackerRecordStore.fetchAllRecords().first {$0.id == id && Calendar.current.isDate($0.date, inSameDayAs: currentDate)}
             case .event:
                 return trackerRecordStore
@@ -416,7 +420,7 @@ extension MainScreenViewController: TrackerCellDelegate {
         if let record {
             trackerRecordStore.deleteRecord(for: record)
         } else {
-            let newRecord = TrackerRecordModel(id: id, date: tracker.type == .habbit ? currentDate : Date.distantPast)
+            let newRecord = TrackerRecordModel(id: id, date: tracker.type == .habit ? currentDate : Date.distantPast)
             trackerRecordStore.addTrackerRecord(with: newRecord)
         }
         
@@ -427,12 +431,12 @@ extension MainScreenViewController: TrackerCellDelegate {
 
 
     
-    func uncompleteTracker(id: UUID, at indexPath: IndexPath) {
+    func uncompletedTracker(id: UUID, at indexPath: IndexPath) {
         guard let tracker = filteredCategories
                 .flatMap({ $0.trackers })
                 .first(where: { $0.id == id }) else { return }
 
-        if tracker.type == .habbit {
+        if tracker.type == .habit {
             if let record = trackerRecordStore
                 .fetchAllRecords()
                 .first(where: {
@@ -523,7 +527,7 @@ extension MainScreenViewController: UICollectionViewDelegateFlowLayout {
                         }
                     }
                     
-                    if tracker.type == .habbit {
+                    if tracker.type == .habit {
                         let editTrackerVC = NewHabitViewController (
                             trackerToEdit: tracker,
                             category: realCategory,

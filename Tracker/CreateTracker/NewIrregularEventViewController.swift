@@ -291,7 +291,7 @@ final class NewIrregularEventViewController: UIViewController {
         scrollContentView.addSubview(emojiCollectionView)
         scrollContentView.addSubview(colorLabel)
         scrollContentView.addSubview(colorCollectionView)
-        setupScrollElementsConstrints()
+        setupScrollElementsConstraints()
     }
     // MARK: - Contraints
     private func setupDaysCountConstraint() {
@@ -320,7 +320,7 @@ final class NewIrregularEventViewController: UIViewController {
             scrollContentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
         ])
     }
-    private func setupScrollElementsConstrints() {
+    private func setupScrollElementsConstraints() {
         emojiLabel.translatesAutoresizingMaskIntoConstraints = false
         emojiCollectionView.translatesAutoresizingMaskIntoConstraints = false
         colorLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -372,7 +372,7 @@ final class NewIrregularEventViewController: UIViewController {
             topTitleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
     }
-    private func setupTextFieldViewConstraintsEditMode() { // MARK: djsnfjnsd
+    private func setupTextFieldViewConstraintsEditMode() {
         textFieldView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             textFieldView.topAnchor.constraint(equalTo: daysCountLabel.bottomAnchor, constant: 40),

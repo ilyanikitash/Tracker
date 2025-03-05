@@ -45,6 +45,6 @@ enum Weekday: Int, Codable {
 }
 
 enum TrackerType {
-    case habbit
+    case habit
     case event
 }

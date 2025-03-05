@@ -8,7 +8,7 @@ import UIKit
 
 protocol TrackerCellDelegate: AnyObject {
     func completeTracker(id: UUID, at indexPath: IndexPath)
-    func uncompleteTracker(id: UUID, at indexPath: IndexPath)
+    func uncompletedTracker(id: UUID, at indexPath: IndexPath)
 }
 
 final class MainScreenCollectionViewCell: UICollectionViewCell {
@@ -138,7 +138,7 @@ final class MainScreenCollectionViewCell: UICollectionViewCell {
             return
         }
         if isCompletedToday {
-            delegate?.uncompleteTracker(id: trackerID, at: indexPath)
+            delegate?.uncompletedTracker(id: trackerID, at: indexPath)
         } else {
             delegate?.completeTracker(id: trackerID, at: indexPath)
         }

@@ -122,7 +122,7 @@ final class NewHabitViewController: UIViewController {
     private let categoryString = NSLocalizedString("category.title", comment: "")
     private let scheduleString = NSLocalizedString("schedule", comment: "")
     private lazy var tableRowsNames: [String] = {
-        return [categoryString, scheduleString]
+        [categoryString, scheduleString]
     }()
     private var selectedCategory: TrackerCategoryModel?
     private var selectedSchedule = [Weekday]()
@@ -185,7 +185,7 @@ final class NewHabitViewController: UIViewController {
             color: color,
             emoji: emoji,
             schedule: selectedSchedule,
-            type: .habbit,
+            type: .habit,
             isPinned: trackerToEdit?.isPinned ?? false
         )
         if isEditMode {

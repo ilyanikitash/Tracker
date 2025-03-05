@@ -10,7 +10,7 @@ import CoreData
 import YandexMobileMetrica
 
 @main
-class AppDelegate: UIResponder, UIApplicationDelegate {
+final class AppDelegate: UIResponder, UIApplicationDelegate {
     
     private let coreDataManager = CoreDataManager.shared
     
