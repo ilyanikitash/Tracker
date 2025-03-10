@@ -12,7 +12,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         label.textAlignment = .center
         label.font = UIFont.systemFont(ofSize: 32)
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.backgroundColor = .white
+        label.backgroundColor = .customWhite
         label.clipsToBounds = true
         label.layer.cornerRadius = 16
         return label
@@ -24,8 +24,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         view.layer.cornerRadius = 8 // Скругляем углы для рамки
         view.layer.masksToBounds = true
         view.layer.borderWidth = 3 // Толщина рамки
-        view.layer.borderColor = UIColor.white.cgColor // Цвет рамки
-        view.layer.borderColor = UIColor.white.withAlphaComponent(0.3).cgColor
+        view.layer.borderColor = UIColor.customWhite.cgColor // Цвет рамки
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()

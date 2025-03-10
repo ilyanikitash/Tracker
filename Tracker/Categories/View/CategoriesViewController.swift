@@ -17,13 +17,15 @@ final class CategoriesViewController: UIViewController {
     // MARK: - lazy properties (UI Elements)
     private lazy var topLabel: UILabel = {
         let label = UILabel()
-        label.text = "Категория"
+        let labelText = NSLocalizedString("category.title", comment: "")
+        label.text = labelText
         label.font = .systemFont(ofSize: 16)
         return label
     }()
     private lazy var stubLabel: UILabel = {
         let label = UILabel()
-        label.text = "Привычки и события можно объединить по смыслу"
+        let labelText = NSLocalizedString("stubTextCategories", comment: "")
+        label.text = labelText
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 12, weight: .medium)
         label.textColor = .customBlack
@@ -36,7 +38,9 @@ final class CategoriesViewController: UIViewController {
     }()
     private lazy var addCategoryButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Добавить категорию", for: .normal)
+        let buttonTitle = NSLocalizedString("addCategory.title", comment: "")
+        button.setTitle(buttonTitle, for: .normal)
+        button.setTitleColor(.customWhite, for: .normal)
         button.backgroundColor = .customBlack
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         button.layer.cornerRadius = 16
@@ -45,7 +49,7 @@ final class CategoriesViewController: UIViewController {
     }()
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
-        tableView.backgroundColor = .white
+        tableView.backgroundColor = .customWhite
         tableView.layer.cornerRadius = 16
         return tableView
     }()
@@ -73,7 +77,8 @@ final class CategoriesViewController: UIViewController {
         if let indexPath = tableView.indexPathForRow(at: buttonPosition) {
             let cell = tableView.cellForRow(at: indexPath) as? NewTrackerTableViewCell
             cell?.image.isHidden = false
-            delegate?.updateSelectedCategory(cell?.category ?? TrackerCategoryModel(title: "Важное", trackers: []))
+            let titleText = NSLocalizedString("important.title", comment: "")
+            delegate?.updateSelectedCategory(cell?.category ?? TrackerCategoryModel(title: titleText, trackers: []))
             dismiss(animated: true, completion: nil)
         }
     }
@@ -112,7 +117,7 @@ final class CategoriesViewController: UIViewController {
         tableView.register(NewTrackerTableViewCell.self, forCellReuseIdentifier: "CategoryTableViewCell")
     }
     private func setupUserInterface() {
-        view.backgroundColor = .white
+        view.backgroundColor = .customWhite
         
         view.addSubview(topLabel)
         setupLabelConstraints()
@@ -184,12 +189,13 @@ extension CategoriesViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryTableViewCell", for: indexPath) as? NewTrackerTableViewCell
+        cell?.backgroundColor = .customBackground
         cell?.image.image = UIImage(named: "DoneImage")
         cell?.image.isHidden = true
         cell?.category = viewModel.categories[indexPath.row]
         cell?.buttonText.text = viewModel.categories[indexPath.row].title
         cell?.button.addTarget(self, action: #selector(categoryDidTapped(_:)), for: .touchUpInside)
-        guard let cell else { return UITableViewCell()}
+        guard let cell else { return UITableViewCell() }
         return cell
     }
 }

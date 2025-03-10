@@ -13,6 +13,7 @@ struct TrackerModel {
     let emoji: String
     let schedule: [Weekday]
     let type: TrackerType
+    let isPinned: Bool
 }
 
 extension TrackerModel {
@@ -36,6 +37,7 @@ extension TrackerModel {
         self.emoji = emoji
         self.schedule = schedule
         self.type = type
+        self.isPinned = trackerCoreData.isPinned
     }
 }
 enum Weekday: Int, Codable {
@@ -43,6 +45,6 @@ enum Weekday: Int, Codable {
 }
 
 enum TrackerType {
-    case habbit
+    case habit
     case event
 }

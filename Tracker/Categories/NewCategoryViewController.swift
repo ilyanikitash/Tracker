@@ -14,14 +14,17 @@ final class NewCategoryViewController: UIViewController {
     // MARK: - lazy properties (UI Elements)
     private lazy var topLabel: UILabel = {
         let label = UILabel()
-        label.text = "Новая категория"
+        let labelText = NSLocalizedString("newCategory.title", comment: "")
+        label.text = labelText
         label.font = .systemFont(ofSize: 16)
         return label
     }()
     private lazy var readyButton: UIButton = {
         let button = UIButton()
         button.isEnabled = false
-        button.setTitle("Готово", for: .normal)
+        let buttonText = NSLocalizedString("done", comment: "")
+        button.setTitle(buttonText, for: .normal)
+        button.setTitleColor(.customWhite, for: .normal)
         button.backgroundColor = .customGray
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         button.layer.cornerRadius = 16
@@ -30,14 +33,15 @@ final class NewCategoryViewController: UIViewController {
     }()
     private lazy var textField: UITextField = {
         let textField = UITextField()
-        textField.placeholder = "Введите название категории"
+        let textFieldPlaceholder = NSLocalizedString("enterCategory", comment: "")
+        textField.placeholder = textFieldPlaceholder
         textField.font = .systemFont(ofSize: 17, weight: .regular)
         textField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
         return textField
     }()
     private lazy var textFieldView: UIView = {
         let view = UIView()
-        view.backgroundColor = .customSystemGray
+        view.backgroundColor = .customBackground
         view.layer.cornerRadius = 16
         return view
     }()
@@ -49,7 +53,7 @@ final class NewCategoryViewController: UIViewController {
         setupUserInterface()
     }
     private func setupUserInterface() {
-        view.backgroundColor = .white
+        view.backgroundColor = .customWhite
         
         view.addSubview(topLabel)
         setupLabelConstraints()

@@ -35,10 +35,6 @@ final class TrackerStore: NSObject {
     weak var delegate: TrackerStoreDelegate?
     
     init(context: NSManagedObjectContext = {
-//        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
-//        fatalError("Unable to retrieve AppDelegate")
-//    }
-        //return appDelegate.persistentContainer.viewContext
         return CoreDataManager.shared.persistentContainer.viewContext
     }()) {
         self.context = context
@@ -121,6 +117,64 @@ extension TrackerStore: TrackerStoreProtocol {
             try fetchedResultsController.performFetch()
         } catch {
             fatalError("Failed to save tracker: \(error)")
+        }
+    }
+    
+    func updateTrackerPin(_ tracker: TrackerModel) {
+        guard let trackerToUpdate = getTrackerCoreData(by: tracker.id) else { return }
+        trackerToUpdate.isPinned = tracker.isPinned
+        
+        do {
+            try context.save()
+            print("Pin tracker updated")
+            try fetchedResultsController.performFetch()
+            print("Updated trackers: \(fetchedResultsController.fetchedObjects ?? [])")
+        } catch {
+            print("Error updating pin tracker: \(error.localizedDescription)")
+        }
+    }
+    
+    func deleteTracker(_ tracker: TrackerModel) {
+        guard let trackerToDelete = getTrackerCoreData(by: tracker.id) else {
+            return
+        }
+        
+        context.delete(trackerToDelete)
+        
+        do {
+            try context.save()
+            print("Tracker deleted")
+            try fetchedResultsController.performFetch()
+            print("Updated: \(fetchedResultsController.fetchedObjects ?? [])")
+        } catch {
+            print("Error updating context: \(error.localizedDescription)")
+        }
+    }
+    
+    func updateTracker(_ tracker: TrackerModel, from category: TrackerCategoryModel) {
+        guard
+            let categoryCoreData = trackerCategoryStore.getCategoryByTitle(category.title),
+            let trackerToUpdate = getTrackerCoreData(by: tracker.id)
+        else {
+            return
+        }
+        
+        trackerToUpdate.id = tracker.id
+        trackerToUpdate.name = tracker.name
+        trackerToUpdate.color = uiColorMarshalling.hexString(from: tracker.color)
+        trackerToUpdate.emoji = tracker.emoji
+        trackerToUpdate.schedule = tracker.schedule as NSObject
+        trackerToUpdate.type = trackerTypeValueTransformer.transformedValue(tracker.type) as? String
+        trackerToUpdate.category = categoryCoreData
+        trackerToUpdate.isPinned = tracker.isPinned
+        
+        do {
+            try context.save()
+            print("Tracker updated")
+            try fetchedResultsController.performFetch()
+            print("Updated trackers: \(fetchedResultsController.fetchedObjects ?? [])")
+        } catch {
+            print("Error saving tracker: \(error.localizedDescription)")
         }
     }
     

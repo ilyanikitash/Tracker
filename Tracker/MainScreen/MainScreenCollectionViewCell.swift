@@ -8,7 +8,7 @@ import UIKit
 
 protocol TrackerCellDelegate: AnyObject {
     func completeTracker(id: UUID, at indexPath: IndexPath)
-    func uncompleteTracker(id: UUID, at indexPath: IndexPath)
+    func uncompletedTracker(id: UUID, at indexPath: IndexPath)
 }
 
 final class MainScreenCollectionViewCell: UICollectionViewCell {
@@ -40,7 +40,7 @@ final class MainScreenCollectionViewCell: UICollectionViewCell {
     private lazy var daysLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 12, weight: .medium)
-        label.textColor = .black
+        label.textColor = .customBlack
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -56,6 +56,14 @@ final class MainScreenCollectionViewCell: UICollectionViewCell {
         button.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
         return button
     }()
+    private lazy var pinnedImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.tintColor = .white
+        imageView.image = UIImage(named: "PinImage")
+        imageView.isHidden = true
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        return imageView
+    }()
     private lazy var plusImage: UIImage = {
         let pointSize = UIImage.SymbolConfiguration(pointSize: 11)
         let image = UIImage(systemName: "plus", withConfiguration: pointSize) ?? UIImage()
@@ -67,7 +75,7 @@ final class MainScreenCollectionViewCell: UICollectionViewCell {
     var trackerID: UUID?
     private var indexPath: IndexPath?
     private var isCompletedToday: Bool = false
-    
+    private let analyticService: AnalyticServiceProtocol = AnalyticService()
     static let identifier = "TrackerCell"
     
     // MARK: - Init
@@ -77,6 +85,7 @@ final class MainScreenCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(colorView)
         colorView.addSubview(emojiLabel)
         colorView.addSubview(titleLabel)
+        colorView.addSubview(pinnedImageView)
         contentView.addSubview(daysLabel)
         contentView.addSubview(addButton)
         
@@ -100,6 +109,11 @@ final class MainScreenCollectionViewCell: UICollectionViewCell {
             emojiLabel.leadingAnchor.constraint(equalTo: colorView.leadingAnchor, constant: 10),
             emojiLabel.widthAnchor.constraint(equalToConstant: 24),
             emojiLabel.heightAnchor.constraint(equalToConstant: 24),
+            
+            pinnedImageView.heightAnchor.constraint(equalToConstant: 24),
+            pinnedImageView.widthAnchor.constraint(equalToConstant: 24),
+            pinnedImageView.trailingAnchor.constraint(equalTo: colorView.trailingAnchor, constant: -4),
+            pinnedImageView.topAnchor.constraint(equalTo: colorView.topAnchor, constant: 12),
 
             titleLabel.centerXAnchor.constraint(equalTo: colorView.centerXAnchor),
             titleLabel.topAnchor.constraint(equalTo: emojiLabel.bottomAnchor, constant: 8),
@@ -116,28 +130,15 @@ final class MainScreenCollectionViewCell: UICollectionViewCell {
 
         ])
     }
-    
-    private func pluralizeDays(_ count: Int) -> String {
-        let remainder10 = count % 10
-        let remainder100 = count % 100
-        
-        if remainder10 == 1 && remainder100 != 11 {
-            return "\(count) день"
-        } else if remainder10 >= 2 && remainder10 <= 4 && (remainder100 < 10) || remainder100 >= 20 {
-            return "\(count) дня"
-        } else {
-            return "\(count) дней"
-        }
-    }
-    
     // MARK: - Configuration
     @objc private func addButtonTapped() {
+        analyticService.trackClick(screen: .main, item: .tapTracker)
         guard let trackerID = trackerID, let indexPath = indexPath else {
             assertionFailure("no trackerID")
             return
         }
         if isCompletedToday {
-            delegate?.uncompleteTracker(id: trackerID, at: indexPath)
+            delegate?.uncompletedTracker(id: trackerID, at: indexPath)
         } else {
             delegate?.completeTracker(id: trackerID, at: indexPath)
         }
@@ -159,6 +160,7 @@ final class MainScreenCollectionViewCell: UICollectionViewCell {
         titleLabel.text = tracker.name
         colorView.backgroundColor = tracker.color
         addButton.backgroundColor = tracker.color
+        pinnedImageView.isHidden = !tracker.isPinned
         
         if isCompletedToday {
             addButton.backgroundColor = tracker.color.withAlphaComponent(0.3)
@@ -166,7 +168,10 @@ final class MainScreenCollectionViewCell: UICollectionViewCell {
             addButton.backgroundColor = tracker.color
         }
         
-        let wordDay = pluralizeDays(completedDays)
+        let wordDay = String.localizedStringWithFormat(
+            NSLocalizedString("numberOfDays", comment: ""),
+            completedDays
+        )
         daysLabel.text = "\(wordDay)"
         
         let image = isCompletedToday ? completedImage : plusImage

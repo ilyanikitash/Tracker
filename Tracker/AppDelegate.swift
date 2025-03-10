@@ -7,15 +7,17 @@
 
 import UIKit
 import CoreData
+import YandexMobileMetrica
 
 @main
-class AppDelegate: UIResponder, UIApplicationDelegate {
+final class AppDelegate: UIResponder, UIApplicationDelegate {
     
     private let coreDataManager = CoreDataManager.shared
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         ScheduleValueTransformer.register()
         TrackerTypeValueTransformer.register()
+        AnalyticService.activate()
         return true
     }
 

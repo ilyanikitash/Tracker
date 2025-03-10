@@ -11,14 +11,17 @@ final class CreateTrackerViewController: UIViewController {
     // MARK: - lazy properties (UI Elements)
     lazy var label: UILabel = {
         let label = UILabel()
-        label.text = "Создание трекера"
+        let labelText = NSLocalizedString("createTracker.title", comment: "")
+        label.text = labelText
         label.font = .systemFont(ofSize: 16)
         return label
     }()
     private lazy var habitButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Привычка", for: .normal)
+        let buttonText = NSLocalizedString("habit", comment: "")
+        button.setTitle(buttonText, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16)
+        button.setTitleColor(.customWhite, for: .normal)
         button.backgroundColor = .customBlack
         button.layer.cornerRadius = 16
         button.addTarget(self, action: #selector(habitButtonTapped), for: .touchUpInside)
@@ -26,8 +29,10 @@ final class CreateTrackerViewController: UIViewController {
     }()
     lazy var irregularEventButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Нерегулярные событие", for: .normal)
+        let buttonText = NSLocalizedString("irregularEvent", comment: "")
+        button.setTitle(buttonText, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16)
+        button.setTitleColor(.customWhite, for: .normal)
         button.backgroundColor = .customBlack
         button.layer.cornerRadius = 16
         button.addTarget(self, action: #selector(irregularEventButtonTapped), for: .touchUpInside)
@@ -60,7 +65,7 @@ final class CreateTrackerViewController: UIViewController {
     }
     // MARK: - Private functions
     private func setupUserInterface() {
-        view.backgroundColor = .white
+        view.backgroundColor = .customWhite
         
         view.addSubview(label)
         setupLabelConstraints()

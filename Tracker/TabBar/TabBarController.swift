@@ -15,10 +15,10 @@ final class TabBarController: UITabBarController {
         let mainNavController = UINavigationController(rootViewController: mainVC)
             
         mainNavController.setNavigationBarHidden(false, animated: false)
-        mainNavController.tabBarItem = UITabBarItem(title: "Трекеры", image: UIImage(named: "TabBarTrackersActive"), tag: 0)
+        mainNavController.tabBarItem = UITabBarItem(title: NSLocalizedString("trackers", comment: ""), image: UIImage(named: "TabBarTrackersActive"), tag: 0)
             
         let secondVC = StatisticsViewController()
-        secondVC.tabBarItem = UITabBarItem(title: "Статистика", image: UIImage(named: "TabBarStatisticsActive"), tag: 1)
+        secondVC.tabBarItem = UITabBarItem(title: NSLocalizedString("statistic", comment: ""), image: UIImage(named: "TabBarStatisticsActive"), tag: 1)
             
         return [mainNavController, secondVC]
     }
@@ -29,7 +29,7 @@ final class TabBarController: UITabBarController {
         if #available(iOS 13.0, *) {
             let tabBarAppearance: UITabBarAppearance = UITabBarAppearance()
             tabBarAppearance.configureWithDefaultBackground()
-            tabBarAppearance.backgroundColor = UIColor.white
+            tabBarAppearance.backgroundColor = .customWhite
             UITabBar.appearance().standardAppearance = tabBarAppearance
 
             if #available(iOS 15.0, *) {

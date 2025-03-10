@@ -13,10 +13,6 @@ final class TrackerRecordStore {
     private let trackerStore = TrackerStore()
     
     convenience init() {
-//        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
-//            fatalError("AppDelegate not found")
-//        }
-//        let context = appDelegate.persistentContainer.viewContext
         let context = CoreDataManager.shared.persistentContainer.viewContext
         self.init(context: context)
     }
