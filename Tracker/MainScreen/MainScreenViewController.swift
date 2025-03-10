@@ -182,17 +182,26 @@ final class MainScreenViewController: UIViewController {
                 }
                 
                 let filterCondition = filterCheck(tracker.id)
-                if textCondition && dateCondition {
-                    filterButton.isHidden = false
-                } else {
-                    filterButton.isHidden = true
-                }
                 
                 return textCondition && dateCondition && filterCondition
             }
-            
             if trackers.isEmpty {
-                return nil
+                let trackersCheck = category.trackers.filter { tracker in
+                    let textCondition = filterText.isEmpty ||
+                        tracker.name.lowercased().contains(filterText)
+
+                    let dateCondition = tracker.schedule.contains { weekDay in
+                        return weekDay.rawValue == filterWeekday
+                    }
+                    return textCondition && dateCondition
+                }
+                if trackersCheck.isEmpty {
+                    filterButton.isHidden = true
+                } else {
+                    filterButton.isHidden = false
+                }
+            } else {
+                filterButton.isHidden = false
             }
             
             return TrackerCategoryModel(
